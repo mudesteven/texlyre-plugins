@@ -34,14 +34,14 @@ const config: TexlyreConfig = {
     },
 
     plugins: {
-        collaborative_viewers: ['bibtex', 'drawio'],
+        collaborative_viewers: ['bibtex', 'drawio', 'excalidraw'],
         viewers: ['bibtex', 'image', 'pdf', 'drawio'],
         renderers: ['pdf', 'canvas'],
         loggers: ['latex_visualizer', 'typst_visualizer'],
-        bibliography: ['zotero', 'openalex'], // 'jabref' 
+        bibliography: ['zotero', 'openalex'], // 'jabref'
         lsp: [],
-        backup: ['github', 'gitlab', 'forgejo', 'gitea'],
-        themes: ['texlyre_slim', 'texlyre_wide', 'texlyre_mobile'],
+        backup: ['github', 'gitlab', 'forgejo', 'gitea', 'google-drive'],
+        themes: ['texlyre_slim', 'texlyre_wide', 'texlyre_mobile', 'modern'],
     },
 
     // overwrite priority is default < local < mobile for corresponding configs

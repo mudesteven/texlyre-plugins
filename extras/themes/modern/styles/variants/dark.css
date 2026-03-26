@@ -1,0 +1,10 @@
+/* extras/themes/modern/styles/variants/dark.css */
+[data-theme="modern-dark"][data-theme-plugin="modern"] {
+	--accent-background: #1e2035;
+	--accent-border: #2d3158;
+	--text-color: #e2e8f0;
+	--editor-background: #0a0c12;
+	--editor-text: #e2e8f0;
+	--sidebar-background: #14161f;
+	--sidebar-border: #252838;
+}

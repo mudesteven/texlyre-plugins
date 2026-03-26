@@ -1,0 +1,10 @@
+/* extras/themes/modern/styles/variants/light.css */
+[data-theme="modern-light"][data-theme-plugin="modern"] {
+	--accent-background: #eff0ff;
+	--accent-border: #c7d2fe;
+	--text-color: #2d3748;
+	--editor-background: #ffffff;
+	--editor-text: #2d3748;
+	--sidebar-background: #f0f2f8;
+	--sidebar-border: #e2e8f0;
+}

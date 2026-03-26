@@ -3,6 +3,7 @@ export default {
 	plugins: [
 	  "collaborative_viewers/bibtex",
 	  "collaborative_viewers/drawio",
+	  "collaborative_viewers/excalidraw",
 	  "viewers/bibtex",
 	  "viewers/image",
 	  "viewers/pdf",
@@ -17,8 +18,10 @@ export default {
 	  "backup/gitlab",
 	  "backup/forgejo",
 	  "backup/gitea",
+	  "backup/google-drive",
 	  "themes/texlyre_slim",
 	  "themes/texlyre_wide",
-	  "themes/texlyre_mobile"
+	  "themes/texlyre_mobile",
+	  "themes/modern"
 	],
 };
