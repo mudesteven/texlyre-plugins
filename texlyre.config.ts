@@ -34,7 +34,7 @@ const config: TexlyreConfig = {
     },
 
     plugins: {
-        collaborative_viewers: ['bibtex', 'drawio'], // add 'excalidraw' after: npm install @excalidraw/excalidraw
+        collaborative_viewers: ['bibtex', 'drawio','excalidraw'], // add 'excalidraw' after: npm install @excalidraw/excalidraw
         viewers: ['bibtex', 'image', 'pdf', 'drawio'],
         renderers: ['pdf', 'canvas'],
         loggers: ['latex_visualizer', 'typst_visualizer'],
