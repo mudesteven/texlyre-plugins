@@ -5,18 +5,25 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { CollaborativeViewerProps } from '@/plugins/PluginInterface';
 
-// Dynamic import to avoid hard build failure when package is absent
-let ExcalidrawComponent: React.ComponentType<any> | null = null;
-let excalidrawImportError: string | null = null;
+// Module-level cache so we only load once across renders
+let _ExcalidrawComponent: React.ComponentType<any> | null = null;
+let _loadError: string | null = null;
+let _loadPromise: Promise<void> | null = null;
 
-try {
-	// This will be resolved at build time by the bundler
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const mod = require('@excalidraw/excalidraw');
-	ExcalidrawComponent = mod.Excalidraw ?? mod.default?.Excalidraw ?? null;
-} catch (e) {
-	excalidrawImportError =
-		'@excalidraw/excalidraw is not installed. Run: npm install @excalidraw/excalidraw';
+function loadExcalidraw(): Promise<void> {
+	if (_loadPromise) return _loadPromise;
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	_loadPromise = import(/* @vite-ignore */ '@excalidraw/excalidraw') // skipcq
+		.then((mod) => {
+			_ExcalidrawComponent =
+				mod.Excalidraw ?? mod.default?.Excalidraw ?? null;
+		})
+		.catch(() => {
+			_loadError =
+				'@excalidraw/excalidraw is not installed. Run: npm install @excalidraw/excalidraw';
+		});
+	return _loadPromise;
 }
 
 const DEBOUNCE_MS = 500;
@@ -25,8 +32,21 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 	content,
 	onUpdateContent,
 }) => {
-	const [importError] = useState<string | null>(excalidrawImportError);
+	const [ready, setReady] = useState(
+		_ExcalidrawComponent !== null || _loadError !== null,
+	);
 	const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	useEffect(() => {
+		if (ready) return;
+		loadExcalidraw().then(() => setReady(true));
+	}, [ready]);
+
+	useEffect(() => {
+		return () => {
+			if (debounceTimer.current) clearTimeout(debounceTimer.current);
+		};
+	}, []);
 
 	const initialData = useMemo(() => {
 		try {
@@ -44,13 +64,6 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 		}
 	}, [content]);
 
-	// Cleanup debounce on unmount
-	useEffect(() => {
-		return () => {
-			if (debounceTimer.current) clearTimeout(debounceTimer.current);
-		};
-	}, []);
-
 	const handleChange = useCallback(
 		(elements: readonly any[], appState: any, files: any) => {
 			if (debounceTimer.current) clearTimeout(debounceTimer.current);
@@ -63,7 +76,8 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 						elements,
 						appState: {
 							gridSize: appState.gridSize ?? null,
-							viewBackgroundColor: appState.viewBackgroundColor ?? '#ffffff',
+							viewBackgroundColor:
+								appState.viewBackgroundColor ?? '#ffffff',
 						},
 						files: files ?? {},
 					});
@@ -76,7 +90,23 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 		[onUpdateContent],
 	);
 
-	if (importError) {
+	if (!ready) {
+		return (
+			<div
+				style={{
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					width: '100%',
+					height: '100%',
+				}}
+			>
+				<p>Loading Excalidraw…</p>
+			</div>
+		);
+	}
+
+	if (_loadError) {
 		return (
 			<div
 				style={{
@@ -109,7 +139,7 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 		);
 	}
 
-	if (!ExcalidrawComponent) {
+	if (!_ExcalidrawComponent) {
 		return (
 			<div
 				style={{
@@ -124,6 +154,8 @@ const ExcalidrawViewer: React.FC<CollaborativeViewerProps> = ({
 			</div>
 		);
 	}
+
+	const ExcalidrawComponent = _ExcalidrawComponent;
 
 	return (
 		<div style={{ width: '100%', height: '100%' }}>

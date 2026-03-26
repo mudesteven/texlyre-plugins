@@ -66,7 +66,8 @@ async function generatePluginsIndex() {
     for (const [pluginType, pluginsList] of Object.entries(texlyreConfig.plugins)) {
         for (const pluginName of pluginsList) {
             const pluginPath = `${pluginType}/${pluginName}`;
-            const pluginVarName = `${pluginName}${pluginType.charAt(0).toUpperCase() + pluginType.slice(1)}Plugin`;
+            const safeName = pluginName.replace(/-([a-z])/g, (_, c) => c.toUpperCase()).replace(/_([a-z])/g, (_, c) => c.toUpperCase());
+            const pluginVarName = `${safeName}${pluginType.charAt(0).toUpperCase() + pluginType.slice(1)}Plugin`;
 
             imports.push(`import ${pluginVarName} from './${pluginPath}/index';`);
             exports.push(pluginVarName);

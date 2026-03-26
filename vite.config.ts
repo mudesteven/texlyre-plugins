@@ -136,6 +136,7 @@ export default defineConfig({
 			"@myriaddreamin/typst.ts",
 			"@typstyle/typstyle-wasm-bundler",
 			"onnxruntime-web",
+			"@excalidraw/excalidraw",
 		],
 	},
 });
