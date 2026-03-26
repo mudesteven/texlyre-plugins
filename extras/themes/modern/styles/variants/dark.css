@@ -1,10 +1,15 @@
 /* extras/themes/modern/styles/variants/dark.css */
+/* Rosé Pine — warm purple ink */
 [data-theme="modern-dark"][data-theme-plugin="modern"] {
-	--accent-background: #1e2035;
-	--accent-border: #2d3158;
-	--text-color: #e2e8f0;
-	--editor-background: #0a0c12;
-	--editor-text: #e2e8f0;
-	--sidebar-background: #14161f;
-	--sidebar-border: #252838;
+	--accent-background: #26233a;    /* rosé pine overlay */
+	--accent-border: #403d52;        /* highlight-med */
+	--text-color: #e0def4;           /* rosé pine text */
+	--text-muted: #6e6a86;           /* rosé pine muted */
+	--editor-background: #19172480;  /* base with slight transparency */
+	--editor-text: #e0def4;
+	--sidebar-background: #1f1d2e;   /* rosé pine surface */
+	--sidebar-border: #26233a;       /* overlay */
+	--selection-bg: rgba(196, 167, 231, 0.18);
+	--scrollbar-track: #1f1d2e;
+	--scrollbar-thumb: #403d52;
 }

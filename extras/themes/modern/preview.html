@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Theme Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+
+/* ─── Reset ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button, input { font-family: inherit; }
+
+/* ─── Page ─────────────────────────────────────────── */
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: #0d0b12;
+  min-height: 100vh;
+  padding: 48px 24px 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.page-header h1 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #e0def4;
+  opacity: .45;
+}
+.page-header p {
+  font-size: 11px;
+  color: #6e6a86;
+  letter-spacing: .04em;
+}
+.page-chips {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.chip {
+  height: 20px;
+  padding: 0 10px;
+  border-radius: 100px;
+  font-size: 10.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1340px;
+}
+
+/* ─── Theme container ──────────────────────────────── */
+.theme-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 620px;
+}
+
+.theme-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 0 4px 10px;
+}
+
+/* ─── Shared shell structure ───────────────────────── */
+.shell {
+  border-radius: 14px 14px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 460px;
+  font-size: 12.5px;
+  position: relative;
+}
+.shell-body { flex: 1; display: flex; overflow: hidden; }
+
+/* titlebar */
+.titlebar {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  flex-shrink: 0;
+  user-select: none;
+}
+.wm-dots { display: flex; gap: 5px; }
+.wm-dot { width: 11px; height: 11px; border-radius: 50%; }
+.wm-dot.r { background: #ff5f57; }
+.wm-dot.y { background: #febc2e; }
+.wm-dot.g { background: #28c840; }
+.title-text {
+  flex: 1;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+/* toolbar */
+.toolbar {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.tb { height: 26px; padding: 0 10px; border: none; border-radius: 6px; font-size: 11.5px; font-weight: 500; cursor: pointer; background: transparent; transition: background .12s; }
+.tb-sep { width: 1px; height: 16px; margin: 0 4px; }
+.tb-r { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+.tb-pill { height: 20px; padding: 0 10px; border-radius: 100px; font-size: 10.5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.tb-pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* sidebar */
+.sidebar {
+  width: 196px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.sidebar-head {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.tree { flex: 1; padding: 5px 4px; display: flex; flex-direction: column; gap: 1px; }
+.ti {
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background .1s;
+}
+.ti.d1 { padding-left: 20px; }
+.ti.d2 { padding-left: 34px; }
+.ti-icon { font-size: 11px; opacity: .65; flex-shrink: 0; }
+.ti.act .ti-icon { opacity: 1; }
+
+/* editor */
+.editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.tabs {
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 8px;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.tab {
+  height: 28px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 7px 7px 0 0;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: background .1s;
+}
+.tab .unsaved { width: 6px; height: 6px; border-radius: 50%; }
+.code-area {
+  flex: 1;
+  display: flex;
+  padding: 14px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  line-height: 1.75;
+  overflow: hidden;
+}
+.gutter {
+  width: 44px;
+  text-align: right;
+  padding-right: 14px;
+  user-select: none;
+  flex-shrink: 0;
+  opacity: .3;
+  font-size: 11px;
+}
+.lines { flex: 1; overflow: hidden; }
+.line { white-space: pre; }
+.line.hl { border-radius: 4px; }
+
+/* statusbar */
+.statusbar {
+  height: 23px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 14px;
+  font-size: 10.5px;
+  flex-shrink: 0;
+}
+.sb { display: flex; align-items: center; gap: 5px; }
+.sb.r { margin-left: auto; }
+.sb-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ─── Components strip ─────────────────────────────── */
+.comps {
+  border-radius: 0 0 14px 14px;
+  padding: 20px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cs { display: flex; flex-direction: column; gap: 8px; }
+.cs-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.cs-row { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+
+/* Buttons */
+.btn {
+  height: 30px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn.sm { height: 25px; padding: 0 11px; font-size: 11px; border-radius: 6px; }
+.btn.icon { width: 30px; padding: 0; justify-content: center; border-radius: 8px; font-size: 13px; }
+.btn.dis { opacity: .38; cursor: not-allowed; pointer-events: none; }
+
+/* Inputs */
+.inp-wrap { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 120px; }
+.inp-label { font-size: 11px; font-weight: 500; }
+.inp {
+  height: 32px;
+  padding: 0 11px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .12s, box-shadow .12s;
+}
+
+/* Tags */
+.tag { height: 20px; padding: 0 10px; border-radius: 100px; font-size: 10.5px; font-weight: 600; display: inline-flex; align-items: center; }
+
+/* Cards */
+.card-row { display: flex; gap: 10px; }
+.card {
+  flex: 1;
+  border-radius: 10px;
+  padding: 13px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.card-title { font-size: 12px; font-weight: 600; }
+.card-sub { font-size: 11px; }
+.card-foot { display: flex; gap: 6px; margin-top: 4px; }
+.bar-row { display: flex; flex-direction: column; gap: 5px; margin-top: 3px; }
+.bar-head { display: flex; justify-content: space-between; font-size: 10.5px; }
+.bar-track { height: 5px; border-radius: 100px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 100px; }
+.divider { height: 1px; }
+
+
+/* ═══════════════════════════════════════════════════════
+   THEME 1 — Rosé Pine (dark)
+   bg: #191724  surface: #1f1d2e  overlay: #26233a
+   text: #e0def4  muted: #6e6a86  subtle: #908caa
+   iris: #c4a7e7  love: #eb6f92  gold: #f6c177
+   pine: #31748f  foam: #9ccfd8
+═══════════════════════════════════════════════════════ */
+
+.rp .theme-label { color: #908caa; }
+.rp .shell { background: #191724; color: #e0def4; box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 1px #26233a; }
+.rp .titlebar { background: #1f1d2e; border-bottom: 1px solid #26233a; }
+.rp .title-text { color: #6e6a86; }
+.rp .toolbar { background: #1f1d2e; border-bottom: 1px solid #26233a; }
+.rp .tb { color: #908caa; }
+.rp .tb:hover { background: #26233a; color: #e0def4; }
+.rp .tb.on { background: #26233a; color: #c4a7e7; }
+.rp .tb-sep { background: #26233a; }
+.rp .tb-pill { background: #26233a; color: #c4a7e7; }
+.rp .sidebar { background: #1f1d2e; border-right: 1px solid #26233a; }
+.rp .sidebar-head { color: #6e6a86; }
+.rp .ti { color: #908caa; }
+.rp .ti:hover { background: #26233a; color: #e0def4; }
+.rp .ti.act { background: #26233a; color: #c4a7e7; font-weight: 500; }
+.rp .editor { background: #191724; }
+.rp .tabs { background: #1f1d2e; border-bottom: 1px solid #26233a; }
+.rp .tab { color: #6e6a86; }
+.rp .tab:hover { color: #908caa; }
+.rp .tab.on { background: #191724; color: #e0def4; font-weight: 500; border: 1px solid #26233a; border-bottom-color: #191724; }
+.rp .tab .unsaved { background: #c4a7e7; }
+.rp .gutter { color: #6e6a86; }
+.rp .line.hl { background: rgba(196,167,231,.08); }
+.rp .kw  { color: #c4a7e7; }
+.rp .cmd { color: #eb6f92; }
+.rp .str { color: #9ccfd8; }
+.rp .cmt { color: #6e6a86; font-style: italic; }
+.rp .arg { color: #f6c177; }
+.rp .num { color: #eb6f92; }
+.rp .statusbar { background: #c4a7e7; color: #191724; }
+.rp .sb-dot { background: #191724; opacity: .5; }
+.rp .sb-dot.alive { background: #31748f; opacity: 1; }
+.rp .comps { background: #1f1d2e; border-top: 1px solid #26233a; }
+.rp .cs-label { color: #6e6a86; }
+.rp .btn-p { background: #c4a7e7; color: #191724; }
+.rp .btn-p:hover { background: #d9c8f5; }
+.rp .btn-s { background: #26233a; color: #e0def4; border: 1px solid #403d52; }
+.rp .btn-s:hover { border-color: #c4a7e7; color: #c4a7e7; }
+.rp .btn-g { background: transparent; color: #908caa; }
+.rp .btn-g:hover { background: #26233a; color: #e0def4; }
+.rp .btn-d { background: rgba(235,111,146,.15); color: #eb6f92; border: 1px solid rgba(235,111,146,.25); }
+.rp .btn-d:hover { background: rgba(235,111,146,.25); }
+.rp .inp { background: #191724; border: 1px solid #403d52; color: #e0def4; }
+.rp .inp-label { color: #908caa; }
+.rp .inp::placeholder { color: #6e6a86; }
+.rp .inp.foc { border-color: #c4a7e7; box-shadow: 0 0 0 3px rgba(196,167,231,.16); }
+.rp .tag-a { background: rgba(196,167,231,.15); color: #c4a7e7; }
+.rp .tag-b { background: rgba(155,207,216,.13); color: #9ccfd8; }
+.rp .tag-c { background: rgba(235,111,146,.13); color: #eb6f92; }
+.rp .tag-d { background: rgba(246,193,119,.13); color: #f6c177; }
+.rp .card { background: #26233a; border: 1px solid #403d52; }
+.rp .card-title { color: #e0def4; }
+.rp .card-sub { color: #6e6a86; }
+.rp .bar-track { background: #191724; }
+.rp .bar-fill-a { background: #c4a7e7; }
+.rp .bar-fill-b { background: #31748f; }
+.rp .bar-head { color: #908caa; }
+.rp .divider { background: #26233a; }
+
+
+/* ═══════════════════════════════════════════════════════
+   THEME 2 — Flexoki (light)
+   bg: #fffcf0 (paper)  surface: #f2e9e1  border: #e0d5c6
+   text: #100f0f (ink)  muted: #878580  subtle: #b7b5ac
+   red: #af3029  orange: #bc5215  yellow: #ad8301
+   green: #66800b  cyan: #3aa99f  blue: #205ea6  purple: #5e409d
+═══════════════════════════════════════════════════════ */
+
+.fl .theme-label { color: #878580; }
+.fl .shell { background: #fffcf0; color: #100f0f; box-shadow: 0 24px 60px rgba(16,15,15,.15), 0 0 0 1px #e0d5c6; }
+.fl .titlebar { background: #f2e9e1; border-bottom: 1px solid #e0d5c6; }
+.fl .title-text { color: #878580; }
+.fl .toolbar { background: #f2e9e1; border-bottom: 1px solid #e0d5c6; }
+.fl .tb { color: #878580; }
+.fl .tb:hover { background: rgba(16,15,15,.06); color: #100f0f; }
+.fl .tb.on { background: rgba(175,48,41,.1); color: #af3029; }
+.fl .tb-sep { background: #e0d5c6; }
+.fl .tb-pill { background: rgba(175,48,41,.1); color: #af3029; }
+.fl .sidebar { background: #f2e9e1; border-right: 1px solid #e0d5c6; }
+.fl .sidebar-head { color: #878580; }
+.fl .ti { color: #6f6e69; }
+.fl .ti:hover { background: rgba(16,15,15,.05); color: #100f0f; }
+.fl .ti.act { background: rgba(175,48,41,.1); color: #af3029; font-weight: 500; }
+.fl .editor { background: #fffcf0; }
+.fl .tabs { background: #f2e9e1; border-bottom: 1px solid #e0d5c6; }
+.fl .tab { color: #9f9d96; }
+.fl .tab:hover { color: #6f6e69; }
+.fl .tab.on { background: #fffcf0; color: #100f0f; font-weight: 500; border: 1px solid #e0d5c6; border-bottom-color: #fffcf0; }
+.fl .tab .unsaved { background: #af3029; }
+.fl .gutter { color: #878580; }
+.fl .line.hl { background: rgba(175,48,41,.07); }
+.fl .kw  { color: #af3029; }
+.fl .cmd { color: #bc5215; }
+.fl .str { color: #24837b; }
+.fl .cmt { color: #b7b5ac; font-style: italic; }
+.fl .arg { color: #ad8301; }
+.fl .num { color: #5e409d; }
+.fl .statusbar { background: #af3029; color: #fffcf0; }
+.fl .sb-dot { background: #fffcf0; opacity: .5; }
+.fl .sb-dot.alive { background: #c8daa1; opacity: 1; }
+.fl .comps { background: #f2e9e1; border-top: 1px solid #e0d5c6; }
+.fl .cs-label { color: #878580; }
+.fl .btn-p { background: #af3029; color: #fffcf0; }
+.fl .btn-p:hover { background: #c53b2d; }
+.fl .btn-s { background: #fffcf0; color: #100f0f; border: 1px solid #e0d5c6; }
+.fl .btn-s:hover { border-color: #af3029; color: #af3029; }
+.fl .btn-g { background: transparent; color: #878580; }
+.fl .btn-g:hover { background: rgba(16,15,15,.06); color: #100f0f; }
+.fl .btn-d { background: rgba(188,82,21,.1); color: #bc5215; border: 1px solid rgba(188,82,21,.2); }
+.fl .btn-d:hover { background: rgba(188,82,21,.2); }
+.fl .inp { background: #fffcf0; border: 1px solid #e0d5c6; color: #100f0f; }
+.fl .inp-label { color: #6f6e69; }
+.fl .inp::placeholder { color: #b7b5ac; }
+.fl .inp.foc { border-color: #af3029; box-shadow: 0 0 0 3px rgba(175,48,41,.1); }
+.fl .tag-a { background: rgba(175,48,41,.1);  color: #af3029; }
+.fl .tag-b { background: rgba(67,133,190,.1); color: #205ea6; }
+.fl .tag-c { background: rgba(135,154,57,.12); color: #66800b; }
+.fl .tag-d { background: rgba(94,64,157,.1);  color: #5e409d; }
+.fl .card { background: #fffcf0; border: 1px solid #e0d5c6; }
+.fl .card-title { color: #100f0f; }
+.fl .card-sub { color: #878580; }
+.fl .bar-track { background: #e0d5c6; }
+.fl .bar-fill-a { background: #af3029; }
+.fl .bar-fill-b { background: #3aa99f; }
+.fl .bar-head { color: #878580; }
+.fl .divider { background: #e0d5c6; }
+
+
+/* ═══════════════════════════════════════════════════════
+   THEME 3 — Everforest (dark)
+   bg: #2d353b  surface: #343f44  overlay: #3d484d
+   text: #d3c6aa  muted: #859289  subtle: #7a8478
+   green: #a7c080  red: #e67e80  orange: #e69875
+   yellow: #dbbc7f  blue: #7fbbb3  purple: #d699b6
+═══════════════════════════════════════════════════════ */
+
+.ef .theme-label { color: #859289; }
+.ef .shell { background: #2d353b; color: #d3c6aa; box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 0 1px #3d484d; }
+.ef .titlebar { background: #272e33; border-bottom: 1px solid #3d484d; }
+.ef .title-text { color: #7a8478; }
+.ef .toolbar { background: #272e33; border-bottom: 1px solid #3d484d; }
+.ef .tb { color: #859289; }
+.ef .tb:hover { background: #3d484d; color: #d3c6aa; }
+.ef .tb.on { background: #3d484d; color: #a7c080; }
+.ef .tb-sep { background: #3d484d; }
+.ef .tb-pill { background: #3d484d; color: #a7c080; }
+.ef .sidebar { background: #272e33; border-right: 1px solid #3d484d; }
+.ef .sidebar-head { color: #7a8478; }
+.ef .ti { color: #859289; }
+.ef .ti:hover { background: #3d484d; color: #d3c6aa; }
+.ef .ti.act { background: rgba(167,192,128,.12); color: #a7c080; font-weight: 500; }
+.ef .editor { background: #2d353b; }
+.ef .tabs { background: #272e33; border-bottom: 1px solid #3d484d; }
+.ef .tab { color: #7a8478; }
+.ef .tab:hover { color: #859289; }
+.ef .tab.on { background: #2d353b; color: #d3c6aa; font-weight: 500; border: 1px solid #3d484d; border-bottom-color: #2d353b; }
+.ef .tab .unsaved { background: #a7c080; }
+.ef .gutter { color: #7a8478; }
+.ef .line.hl { background: rgba(167,192,128,.08); }
+.ef .kw  { color: #a7c080; }
+.ef .cmd { color: #e69875; }
+.ef .str { color: #7fbbb3; }
+.ef .cmt { color: #7a8478; font-style: italic; }
+.ef .arg { color: #dbbc7f; }
+.ef .num { color: #d699b6; }
+.ef .statusbar { background: #a7c080; color: #2d353b; }
+.ef .sb-dot { background: #2d353b; opacity: .5; }
+.ef .sb-dot.alive { background: #83c092; opacity: 1; }
+.ef .comps { background: #272e33; border-top: 1px solid #3d484d; }
+.ef .cs-label { color: #7a8478; }
+.ef .btn-p { background: #a7c080; color: #2d353b; }
+.ef .btn-p:hover { background: #bdd49a; }
+.ef .btn-s { background: #3d484d; color: #d3c6aa; border: 1px solid #475258; }
+.ef .btn-s:hover { border-color: #a7c080; color: #a7c080; }
+.ef .btn-g { background: transparent; color: #859289; }
+.ef .btn-g:hover { background: #3d484d; color: #d3c6aa; }
+.ef .btn-d { background: rgba(230,126,128,.12); color: #e67e80; border: 1px solid rgba(230,126,128,.2); }
+.ef .btn-d:hover { background: rgba(230,126,128,.22); }
+.ef .inp { background: #2d353b; border: 1px solid #475258; color: #d3c6aa; }
+.ef .inp-label { color: #859289; }
+.ef .inp::placeholder { color: #7a8478; }
+.ef .inp.foc { border-color: #a7c080; box-shadow: 0 0 0 3px rgba(167,192,128,.15); }
+.ef .tag-a { background: rgba(167,192,128,.14); color: #a7c080; }
+.ef .tag-b { background: rgba(127,187,179,.13); color: #7fbbb3; }
+.ef .tag-c { background: rgba(230,126,128,.13); color: #e67e80; }
+.ef .tag-d { background: rgba(219,188,127,.13); color: #dbbc7f; }
+.ef .card { background: #343f44; border: 1px solid #3d484d; }
+.ef .card-title { color: #d3c6aa; }
+.ef .card-sub { color: #7a8478; }
+.ef .bar-track { background: #2d353b; }
+.ef .bar-fill-a { background: #a7c080; }
+.ef .bar-fill-b { background: #7fbbb3; }
+.ef .bar-head { color: #859289; }
+.ef .divider { background: #3d484d; }
+
+
+/* ═══════════════════════════════════════════════════════
+   THEME 4 — Nord (dark, blue)
+   polar night: #2e3440  #3b4252  #434c5e  #4c566a
+   snow storm:  #d8dee9  #e5e9f0  #eceff4
+   frost:       #8fbcbb  #88c0d0  #81a1c1  #5e81ac
+   aurora:      red #bf616a  orange #d08770  yellow #ebcb8b
+                green #a3be8c  purple #b48ead
+═══════════════════════════════════════════════════════ */
+
+.nd .theme-label { color: #616e88; }
+.nd .shell { background: #2e3440; color: #eceff4; box-shadow: 0 24px 60px rgba(0,0,0,.55), 0 0 0 1px #434c5e; }
+.nd .titlebar { background: #3b4252; border-bottom: 1px solid #434c5e; }
+.nd .title-text { color: #616e88; }
+.nd .toolbar { background: #3b4252; border-bottom: 1px solid #434c5e; }
+.nd .tb { color: #7c8fa3; }
+.nd .tb:hover { background: #434c5e; color: #eceff4; }
+.nd .tb.on { background: #434c5e; color: #88c0d0; }
+.nd .tb-sep { background: #434c5e; }
+.nd .tb-pill { background: #434c5e; color: #88c0d0; }
+.nd .sidebar { background: #3b4252; border-right: 1px solid #434c5e; }
+.nd .sidebar-head { color: #616e88; }
+.nd .ti { color: #7c8fa3; }
+.nd .ti:hover { background: #434c5e; color: #e5e9f0; }
+.nd .ti.act { background: rgba(136,192,208,.12); color: #88c0d0; font-weight: 500; }
+.nd .editor { background: #2e3440; }
+.nd .tabs { background: #3b4252; border-bottom: 1px solid #434c5e; }
+.nd .tab { color: #616e88; }
+.nd .tab:hover { color: #7c8fa3; }
+.nd .tab.on { background: #2e3440; color: #eceff4; font-weight: 500; border: 1px solid #434c5e; border-bottom-color: #2e3440; }
+.nd .tab .unsaved { background: #88c0d0; }
+.nd .gutter { color: #4c566a; }
+.nd .line.hl { background: rgba(136,192,208,.08); }
+.nd .kw  { color: #81a1c1; }
+.nd .cmd { color: #88c0d0; }
+.nd .str { color: #a3be8c; }
+.nd .cmt { color: #4c566a; font-style: italic; }
+.nd .arg { color: #ebcb8b; }
+.nd .num { color: #b48ead; }
+.nd .statusbar { background: #5e81ac; color: #eceff4; }
+.nd .sb-dot { background: #eceff4; opacity: .4; }
+.nd .sb-dot.alive { background: #a3be8c; opacity: 1; }
+.nd .comps { background: #3b4252; border-top: 1px solid #434c5e; }
+.nd .cs-label { color: #616e88; }
+.nd .btn-p { background: #88c0d0; color: #2e3440; }
+.nd .btn-p:hover { background: #9dd0e0; }
+.nd .btn-s { background: #434c5e; color: #e5e9f0; border: 1px solid #4c566a; }
+.nd .btn-s:hover { border-color: #88c0d0; color: #88c0d0; }
+.nd .btn-g { background: transparent; color: #7c8fa3; }
+.nd .btn-g:hover { background: #434c5e; color: #eceff4; }
+.nd .btn-d { background: rgba(191,97,106,.12); color: #bf616a; border: 1px solid rgba(191,97,106,.22); }
+.nd .btn-d:hover { background: rgba(191,97,106,.22); }
+.nd .inp { background: #2e3440; border: 1px solid #4c566a; color: #e5e9f0; }
+.nd .inp-label { color: #7c8fa3; }
+.nd .inp::placeholder { color: #4c566a; }
+.nd .inp.foc { border-color: #88c0d0; box-shadow: 0 0 0 3px rgba(136,192,208,.16); }
+.nd .tag-a { background: rgba(136,192,208,.13); color: #88c0d0; }
+.nd .tag-b { background: rgba(163,190,140,.12); color: #a3be8c; }
+.nd .tag-c { background: rgba(191,97,106,.12); color: #bf616a; }
+.nd .tag-d { background: rgba(235,203,139,.12); color: #c0a266; }
+.nd .card { background: #3b4252; border: 1px solid #434c5e; }
+.nd .card-title { color: #eceff4; }
+.nd .card-sub { color: #616e88; }
+.nd .bar-track { background: #2e3440; }
+.nd .bar-fill-a { background: #88c0d0; }
+.nd .bar-fill-b { background: #a3be8c; }
+.nd .bar-head { color: #7c8fa3; }
+.nd .divider { background: #434c5e; }
+
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Modern Theme — Preview</h1>
+  <p>4 variants · app shell + component strip</p>
+  <div class="page-chips">
+    <span class="chip" style="background:rgba(196,167,231,.14);color:#c4a7e7"><span class="chip-dot" style="background:#c4a7e7"></span>Rosé Pine</span>
+    <span class="chip" style="background:rgba(175,48,41,.1);color:#af3029"><span class="chip-dot" style="background:#af3029"></span>Flexoki</span>
+    <span class="chip" style="background:rgba(167,192,128,.13);color:#a7c080"><span class="chip-dot" style="background:#a7c080"></span>Everforest</span>
+    <span class="chip" style="background:rgba(136,192,208,.13);color:#88c0d0"><span class="chip-dot" style="background:#88c0d0"></span>Nord</span>
+  </div>
+</div>
+
+<div class="grid">
+
+  <!-- ══════════════════════════════════════════
+       1. Rosé Pine — dark
+  ══════════════════════════════════════════ -->
+  <div class="theme-wrap rp">
+    <div class="theme-label">modern-dark · Rosé Pine</div>
+    <div class="shell">
+      <div class="titlebar">
+        <div class="wm-dots"><div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div></div>
+        <div class="title-text">main.tex — TeXlyre</div>
+      </div>
+      <div class="toolbar">
+        <button class="tb on">File</button>
+        <button class="tb">Edit</button>
+        <button class="tb">View</button>
+        <div class="tb-sep"></div>
+        <button class="tb">⌘ Compile</button>
+        <div class="tb-r">
+          <div class="tb-pill"><span class="tb-pill-dot"></span>3 online</div>
+          <button class="tb" style="font-size:13px;padding:0 8px">⚙</button>
+        </div>
+      </div>
+      <div class="shell-body">
+        <div class="sidebar">
+          <div class="sidebar-head">Explorer</div>
+          <div class="tree">
+            <div class="ti"><span class="ti-icon">▾</span>📁 my-thesis</div>
+            <div class="ti d1 act"><span class="ti-icon">📄</span>main.tex</div>
+            <div class="ti d1"><span class="ti-icon">📄</span>refs.bib</div>
+            <div class="ti d1"><span class="ti-icon">▾</span>📁 chapters</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>intro.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>method.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>results.tex</div>
+            <div class="ti d1"><span class="ti-icon">▸</span>📁 figures</div>
+          </div>
+        </div>
+        <div class="editor">
+          <div class="tabs">
+            <div class="tab on">main.tex <span class="unsaved"></span></div>
+            <div class="tab">refs.bib</div>
+            <div class="tab">intro.tex</div>
+          </div>
+          <div class="code-area">
+            <div class="gutter">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+            <div class="lines">
+              <div class="line"><span class="cmt">% PhD Thesis · Alice Researcher</span></div>
+              <div class="line"><span class="cmd">\documentclass</span>[<span class="arg">12pt</span>]{<span class="str">article</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">amsmath</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">graphicx</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">hidelinks</span>]{<span class="str">hyperref</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">T1</span>]{<span class="str">fontenc</span>}</div>
+              <div class="line"></div>
+              <div class="line hl"><span class="cmd">\title</span>{<span class="str">Advances in Machine Learning</span>}</div>
+              <div class="line"><span class="cmd">\author</span>{<span class="str">Alice Researcher</span>}</div>
+              <div class="line"><span class="cmd">\date</span>{<span class="num">2024</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="kw">\begin</span>{<span class="str">document</span>}</div>
+              <div class="line">  <span class="cmd">\maketitle</span></div>
+              <div class="line">  <span class="cmd">\tableofcontents</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar">
+        <div class="sb"><div class="sb-dot alive"></div> Connected</div>
+        <div class="sb">Ln 9, Col 7</div>
+        <div class="sb">LaTeX · pdfTeX</div>
+        <div class="sb r">UTF-8</div>
+      </div>
+    </div>
+    <div class="comps">
+      <div class="cs">
+        <div class="cs-label">Buttons</div>
+        <div class="cs-row">
+          <button class="btn btn-p">Compile</button>
+          <button class="btn btn-s">Export PDF</button>
+          <button class="btn btn-g">Cancel</button>
+          <button class="btn btn-d sm">✕ Delete</button>
+          <button class="btn btn-p sm dis">Disabled</button>
+          <button class="btn btn-s icon">⚙</button>
+          <button class="btn btn-s icon">↗</button>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Inputs</div>
+        <div class="cs-row">
+          <div class="inp-wrap"><div class="inp-label">Repository</div><input class="inp" value="alice/thesis"></div>
+          <div class="inp-wrap"><div class="inp-label">Branch (focused)</div><input class="inp foc" value="main"></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="cs">
+        <div class="cs-label">Tags</div>
+        <div class="cs-row">
+          <span class="tag tag-a">● iris</span>
+          <span class="tag tag-b">● foam</span>
+          <span class="tag tag-c">✕ love</span>
+          <span class="tag tag-d">⚑ gold</span>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Cards &amp; Progress</div>
+        <div class="card-row">
+          <div class="card">
+            <div class="card-title">main.tex</div>
+            <div class="card-sub">Modified 2 min ago</div>
+            <div class="card-foot"><span class="tag tag-b" style="font-size:10px">✓ Clean</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Compilation</div>
+            <div class="bar-row">
+              <div class="bar-head"><span>pdfLaTeX</span><span>76%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-a" style="width:76%"></div></div>
+              <div class="bar-head"><span>BibTeX</span><span>100%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-b" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       2. Flexoki — light
+  ══════════════════════════════════════════ -->
+  <div class="theme-wrap fl">
+    <div class="theme-label">modern-light · Flexoki</div>
+    <div class="shell">
+      <div class="titlebar">
+        <div class="wm-dots"><div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div></div>
+        <div class="title-text">main.tex — TeXlyre</div>
+      </div>
+      <div class="toolbar">
+        <button class="tb on">File</button>
+        <button class="tb">Edit</button>
+        <button class="tb">View</button>
+        <div class="tb-sep"></div>
+        <button class="tb">⌘ Compile</button>
+        <div class="tb-r">
+          <div class="tb-pill"><span class="tb-pill-dot"></span>3 online</div>
+          <button class="tb" style="font-size:13px;padding:0 8px">⚙</button>
+        </div>
+      </div>
+      <div class="shell-body">
+        <div class="sidebar">
+          <div class="sidebar-head">Explorer</div>
+          <div class="tree">
+            <div class="ti"><span class="ti-icon">▾</span>📁 my-thesis</div>
+            <div class="ti d1 act"><span class="ti-icon">📄</span>main.tex</div>
+            <div class="ti d1"><span class="ti-icon">📄</span>refs.bib</div>
+            <div class="ti d1"><span class="ti-icon">▾</span>📁 chapters</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>intro.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>method.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>results.tex</div>
+            <div class="ti d1"><span class="ti-icon">▸</span>📁 figures</div>
+          </div>
+        </div>
+        <div class="editor">
+          <div class="tabs">
+            <div class="tab on">main.tex <span class="unsaved"></span></div>
+            <div class="tab">refs.bib</div>
+            <div class="tab">intro.tex</div>
+          </div>
+          <div class="code-area">
+            <div class="gutter">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+            <div class="lines">
+              <div class="line"><span class="cmt">% PhD Thesis · Alice Researcher</span></div>
+              <div class="line"><span class="cmd">\documentclass</span>[<span class="arg">12pt</span>]{<span class="str">article</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">amsmath</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">graphicx</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">hidelinks</span>]{<span class="str">hyperref</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">T1</span>]{<span class="str">fontenc</span>}</div>
+              <div class="line"></div>
+              <div class="line hl"><span class="cmd">\title</span>{<span class="str">Advances in Machine Learning</span>}</div>
+              <div class="line"><span class="cmd">\author</span>{<span class="str">Alice Researcher</span>}</div>
+              <div class="line"><span class="cmd">\date</span>{<span class="num">2024</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="kw">\begin</span>{<span class="str">document</span>}</div>
+              <div class="line">  <span class="cmd">\maketitle</span></div>
+              <div class="line">  <span class="cmd">\tableofcontents</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar">
+        <div class="sb"><div class="sb-dot alive"></div> Connected</div>
+        <div class="sb">Ln 9, Col 7</div>
+        <div class="sb">LaTeX · pdfTeX</div>
+        <div class="sb r">UTF-8</div>
+      </div>
+    </div>
+    <div class="comps">
+      <div class="cs">
+        <div class="cs-label">Buttons</div>
+        <div class="cs-row">
+          <button class="btn btn-p">Compile</button>
+          <button class="btn btn-s">Export PDF</button>
+          <button class="btn btn-g">Cancel</button>
+          <button class="btn btn-d sm">✕ Delete</button>
+          <button class="btn btn-p sm dis">Disabled</button>
+          <button class="btn btn-s icon">⚙</button>
+          <button class="btn btn-s icon">↗</button>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Inputs</div>
+        <div class="cs-row">
+          <div class="inp-wrap"><div class="inp-label">Repository</div><input class="inp" value="alice/thesis"></div>
+          <div class="inp-wrap"><div class="inp-label">Branch (focused)</div><input class="inp foc" value="main"></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="cs">
+        <div class="cs-label">Tags</div>
+        <div class="cs-row">
+          <span class="tag tag-a">● terracotta</span>
+          <span class="tag tag-b">● cobalt</span>
+          <span class="tag tag-c">✓ grass</span>
+          <span class="tag tag-d">◆ plum</span>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Cards &amp; Progress</div>
+        <div class="card-row">
+          <div class="card">
+            <div class="card-title">main.tex</div>
+            <div class="card-sub">Modified 2 min ago</div>
+            <div class="card-foot"><span class="tag tag-c" style="font-size:10px">✓ Clean</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Compilation</div>
+            <div class="bar-row">
+              <div class="bar-head"><span>pdfLaTeX</span><span>76%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-a" style="width:76%"></div></div>
+              <div class="bar-head"><span>BibTeX</span><span>100%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-b" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       3. Everforest — dark
+  ══════════════════════════════════════════ -->
+  <div class="theme-wrap ef">
+    <div class="theme-label">modern-everforest · Everforest</div>
+    <div class="shell">
+      <div class="titlebar">
+        <div class="wm-dots"><div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div></div>
+        <div class="title-text">main.tex — TeXlyre</div>
+      </div>
+      <div class="toolbar">
+        <button class="tb on">File</button>
+        <button class="tb">Edit</button>
+        <button class="tb">View</button>
+        <div class="tb-sep"></div>
+        <button class="tb">⌘ Compile</button>
+        <div class="tb-r">
+          <div class="tb-pill"><span class="tb-pill-dot"></span>3 online</div>
+          <button class="tb" style="font-size:13px;padding:0 8px">⚙</button>
+        </div>
+      </div>
+      <div class="shell-body">
+        <div class="sidebar">
+          <div class="sidebar-head">Explorer</div>
+          <div class="tree">
+            <div class="ti"><span class="ti-icon">▾</span>📁 my-thesis</div>
+            <div class="ti d1 act"><span class="ti-icon">📄</span>main.tex</div>
+            <div class="ti d1"><span class="ti-icon">📄</span>refs.bib</div>
+            <div class="ti d1"><span class="ti-icon">▾</span>📁 chapters</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>intro.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>method.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>results.tex</div>
+            <div class="ti d1"><span class="ti-icon">▸</span>📁 figures</div>
+          </div>
+        </div>
+        <div class="editor">
+          <div class="tabs">
+            <div class="tab on">main.tex <span class="unsaved"></span></div>
+            <div class="tab">refs.bib</div>
+            <div class="tab">intro.tex</div>
+          </div>
+          <div class="code-area">
+            <div class="gutter">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+            <div class="lines">
+              <div class="line"><span class="cmt">% PhD Thesis · Alice Researcher</span></div>
+              <div class="line"><span class="cmd">\documentclass</span>[<span class="arg">12pt</span>]{<span class="str">article</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">amsmath</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">graphicx</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">hidelinks</span>]{<span class="str">hyperref</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">T1</span>]{<span class="str">fontenc</span>}</div>
+              <div class="line"></div>
+              <div class="line hl"><span class="cmd">\title</span>{<span class="str">Advances in Machine Learning</span>}</div>
+              <div class="line"><span class="cmd">\author</span>{<span class="str">Alice Researcher</span>}</div>
+              <div class="line"><span class="cmd">\date</span>{<span class="num">2024</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="kw">\begin</span>{<span class="str">document</span>}</div>
+              <div class="line">  <span class="cmd">\maketitle</span></div>
+              <div class="line">  <span class="cmd">\tableofcontents</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar">
+        <div class="sb"><div class="sb-dot alive"></div> Connected</div>
+        <div class="sb">Ln 9, Col 7</div>
+        <div class="sb">LaTeX · pdfTeX</div>
+        <div class="sb r">UTF-8</div>
+      </div>
+    </div>
+    <div class="comps">
+      <div class="cs">
+        <div class="cs-label">Buttons</div>
+        <div class="cs-row">
+          <button class="btn btn-p">Compile</button>
+          <button class="btn btn-s">Export PDF</button>
+          <button class="btn btn-g">Cancel</button>
+          <button class="btn btn-d sm">✕ Delete</button>
+          <button class="btn btn-p sm dis">Disabled</button>
+          <button class="btn btn-s icon">⚙</button>
+          <button class="btn btn-s icon">↗</button>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Inputs</div>
+        <div class="cs-row">
+          <div class="inp-wrap"><div class="inp-label">Repository</div><input class="inp" value="alice/thesis"></div>
+          <div class="inp-wrap"><div class="inp-label">Branch (focused)</div><input class="inp foc" value="main"></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="cs">
+        <div class="cs-label">Tags</div>
+        <div class="cs-row">
+          <span class="tag tag-a">● green</span>
+          <span class="tag tag-b">● aqua</span>
+          <span class="tag tag-c">✕ red</span>
+          <span class="tag tag-d">⚑ yellow</span>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Cards &amp; Progress</div>
+        <div class="card-row">
+          <div class="card">
+            <div class="card-title">main.tex</div>
+            <div class="card-sub">Modified 2 min ago</div>
+            <div class="card-foot"><span class="tag tag-a" style="font-size:10px">✓ Clean</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Compilation</div>
+            <div class="bar-row">
+              <div class="bar-head"><span>pdfLaTeX</span><span>76%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-a" style="width:76%"></div></div>
+              <div class="bar-head"><span>BibTeX</span><span>100%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-b" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       4. Nord — dark blue
+  ══════════════════════════════════════════ -->
+  <div class="theme-wrap nd">
+    <div class="theme-label">modern-nord · Nord</div>
+    <div class="shell">
+      <div class="titlebar">
+        <div class="wm-dots"><div class="wm-dot r"></div><div class="wm-dot y"></div><div class="wm-dot g"></div></div>
+        <div class="title-text">main.tex — TeXlyre</div>
+      </div>
+      <div class="toolbar">
+        <button class="tb on">File</button>
+        <button class="tb">Edit</button>
+        <button class="tb">View</button>
+        <div class="tb-sep"></div>
+        <button class="tb">⌘ Compile</button>
+        <div class="tb-r">
+          <div class="tb-pill"><span class="tb-pill-dot"></span>3 online</div>
+          <button class="tb" style="font-size:13px;padding:0 8px">⚙</button>
+        </div>
+      </div>
+      <div class="shell-body">
+        <div class="sidebar">
+          <div class="sidebar-head">Explorer</div>
+          <div class="tree">
+            <div class="ti"><span class="ti-icon">▾</span>📁 my-thesis</div>
+            <div class="ti d1 act"><span class="ti-icon">📄</span>main.tex</div>
+            <div class="ti d1"><span class="ti-icon">📄</span>refs.bib</div>
+            <div class="ti d1"><span class="ti-icon">▾</span>📁 chapters</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>intro.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>method.tex</div>
+            <div class="ti d2"><span class="ti-icon">📄</span>results.tex</div>
+            <div class="ti d1"><span class="ti-icon">▸</span>📁 figures</div>
+          </div>
+        </div>
+        <div class="editor">
+          <div class="tabs">
+            <div class="tab on">main.tex <span class="unsaved"></span></div>
+            <div class="tab">refs.bib</div>
+            <div class="tab">intro.tex</div>
+          </div>
+          <div class="code-area">
+            <div class="gutter">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15</div>
+            <div class="lines">
+              <div class="line"><span class="cmt">% PhD Thesis · Alice Researcher</span></div>
+              <div class="line"><span class="cmd">\documentclass</span>[<span class="arg">12pt</span>]{<span class="str">article</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">amsmath</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>{<span class="str">graphicx</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">hidelinks</span>]{<span class="str">hyperref</span>}</div>
+              <div class="line"><span class="cmd">\usepackage</span>[<span class="arg">T1</span>]{<span class="str">fontenc</span>}</div>
+              <div class="line"></div>
+              <div class="line hl"><span class="cmd">\title</span>{<span class="str">Advances in Machine Learning</span>}</div>
+              <div class="line"><span class="cmd">\author</span>{<span class="str">Alice Researcher</span>}</div>
+              <div class="line"><span class="cmd">\date</span>{<span class="num">2024</span>}</div>
+              <div class="line"></div>
+              <div class="line"><span class="kw">\begin</span>{<span class="str">document</span>}</div>
+              <div class="line">  <span class="cmd">\maketitle</span></div>
+              <div class="line">  <span class="cmd">\tableofcontents</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="statusbar">
+        <div class="sb"><div class="sb-dot alive"></div> Connected</div>
+        <div class="sb">Ln 9, Col 7</div>
+        <div class="sb">LaTeX · pdfTeX</div>
+        <div class="sb r">UTF-8</div>
+      </div>
+    </div>
+    <div class="comps">
+      <div class="cs">
+        <div class="cs-label">Buttons</div>
+        <div class="cs-row">
+          <button class="btn btn-p">Compile</button>
+          <button class="btn btn-s">Export PDF</button>
+          <button class="btn btn-g">Cancel</button>
+          <button class="btn btn-d sm">✕ Delete</button>
+          <button class="btn btn-p sm dis">Disabled</button>
+          <button class="btn btn-s icon">⚙</button>
+          <button class="btn btn-s icon">↗</button>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Inputs</div>
+        <div class="cs-row">
+          <div class="inp-wrap"><div class="inp-label">Repository</div><input class="inp" value="alice/thesis"></div>
+          <div class="inp-wrap"><div class="inp-label">Branch (focused)</div><input class="inp foc" value="main"></div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="cs">
+        <div class="cs-label">Tags</div>
+        <div class="cs-row">
+          <span class="tag tag-a">● frost</span>
+          <span class="tag tag-b">● aurora green</span>
+          <span class="tag tag-c">✕ aurora red</span>
+          <span class="tag tag-d">⚑ aurora yellow</span>
+        </div>
+      </div>
+      <div class="cs">
+        <div class="cs-label">Cards &amp; Progress</div>
+        <div class="card-row">
+          <div class="card">
+            <div class="card-title">main.tex</div>
+            <div class="card-sub">Modified 2 min ago</div>
+            <div class="card-foot"><span class="tag tag-b" style="font-size:10px">✓ Clean</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title">Compilation</div>
+            <div class="bar-row">
+              <div class="bar-head"><span>pdfLaTeX</span><span>76%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-a" style="width:76%"></div></div>
+              <div class="bar-head"><span>BibTeX</span><span>100%</span></div>
+              <div class="bar-track"><div class="bar-fill bar-fill-b" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+</body>
+</html>

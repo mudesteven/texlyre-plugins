@@ -1,0 +1,15 @@
+/* extras/themes/modern/styles/variants/nord.css */
+/* Nord — arctic cool blues */
+[data-theme="modern-nord"][data-theme-plugin="modern"] {
+	--accent-background: #3b4252;    /* polar night 2 */
+	--accent-border: #434c5e;        /* polar night 3 */
+	--text-color: #eceff4;           /* snow storm 3 */
+	--text-muted: #616e88;           /* polar night 4 mid */
+	--editor-background: #2e344080;  /* base with slight transparency */
+	--editor-text: #e5e9f0;
+	--sidebar-background: #3b4252;   /* polar night 2 */
+	--sidebar-border: #434c5e;       /* polar night 3 */
+	--selection-bg: rgba(136, 192, 208, 0.15);
+	--scrollbar-track: #3b4252;
+	--scrollbar-thumb: #434c5e;
+}

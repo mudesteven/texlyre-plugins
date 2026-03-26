@@ -1,0 +1,15 @@
+/* extras/themes/modern/styles/variants/everforest.css */
+/* Everforest — muted forest tones */
+[data-theme="modern-everforest"][data-theme-plugin="modern"] {
+	--accent-background: #343f44;    /* surface */
+	--accent-border: #3d484d;        /* overlay */
+	--text-color: #d3c6aa;           /* fg */
+	--text-muted: #7a8478;           /* gray */
+	--editor-background: #2d353b80; /* base with slight transparency */
+	--editor-text: #d3c6aa;
+	--sidebar-background: #272e33;   /* hard bg */
+	--sidebar-border: #3d484d;       /* overlay */
+	--selection-bg: rgba(167, 192, 128, 0.15);
+	--scrollbar-track: #272e33;
+	--scrollbar-thumb: #3d484d;
+}

@@ -1,10 +1,15 @@
 /* extras/themes/modern/styles/variants/light.css */
+/* Flexoki — ink on aged paper */
 [data-theme="modern-light"][data-theme-plugin="modern"] {
-	--accent-background: #eff0ff;
-	--accent-border: #c7d2fe;
-	--text-color: #2d3748;
-	--editor-background: #ffffff;
-	--editor-text: #2d3748;
-	--sidebar-background: #f0f2f8;
-	--sidebar-border: #e2e8f0;
+	--accent-background: #f2e9e1;    /* flexoki overlay */
+	--accent-border: #e0d5c6;        /* warm border */
+	--text-color: #100f0f;           /* flexoki ink */
+	--text-muted: #878580;           /* flexoki base-500 */
+	--editor-background: #fffcf0;    /* flexoki paper */
+	--editor-text: #282726;          /* flexoki base-900 */
+	--sidebar-background: #f2e9e1;   /* flexoki overlay */
+	--sidebar-border: #e0d5c6;
+	--selection-bg: rgba(175, 48, 41, 0.12);
+	--scrollbar-track: #f2e9e1;
+	--scrollbar-thumb: #cecdc3;
 }
