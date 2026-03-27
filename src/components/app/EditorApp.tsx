@@ -27,6 +27,9 @@ import BackupStatusIndicator from '../backup/BackupStatusIndicator';
 import ChatPanel from '../chat/ChatPanel';
 import CollabStatusIndicator from '../collab/CollabStatusIndicator';
 import { ChevronLeftIcon, EditIcon } from '../common/Icons';
+import NotificationCenter from '../common/NotificationCenter';
+import type { Notification } from '../common/NotificationCenter';
+import ThemeToggleButton from '../settings/ThemeToggleButton';
 import Modal from '../common/Modal';
 import OfflineBanner from '../common/OfflineBanner';
 import ToastContainer from '../common/ToastContainer';
@@ -113,7 +116,20 @@ const EditorAppView: React.FC<EditorAppProps> = ({
   const { isOfflineMode } = useOffline();
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   useGlobalKeyboard();
+
+  // Feed backup activities into notifications
+  useEffect(() => {
+    if (activities && activities.length > 0) {
+      setNotifications(activities.map((a: any) => ({
+        id: a.id || String(Math.random()),
+        message: a.message || String(a),
+        type: (a.type as Notification['type']) || 'info',
+        timestamp: a.timestamp,
+      })));
+    }
+  }, [activities]);
 
   const updateContent = (docId: string, content: string) => {
     changeDoc((d) => {
@@ -490,20 +506,25 @@ const EditorAppView: React.FC<EditorAppProps> = ({
       {isGuestUser(user) &&
         <GuestUpgradeBanner
           onOpenUpgradeModal={() => setShowGuestUpgradeModal(true)} />
-
       }
-      <header>
-        <div className="header-left">
-          <button className="back-button" onClick={onBackToProjects}>
-            <ChevronLeftIcon />{t('Projects')}
 
+      <nav className="menubar">
+        <div className="menubar-left">
+          <button className="back-btn" onClick={onBackToProjects}>
+            <ChevronLeftIcon />{t('Projects')}
           </button>
+
+          <a href="https://texlyre.github.io" target="_blank" rel="noreferrer">
+            <img src={texlyreLogo} className="menubar-logo" alt={t('TeXlyre logo')} />
+          </a>
+
+          <div className="menubar-divider" />
         </div>
-        <div className="header-center">
+
+        <div className="menubar-center">
           <div
             className="project-title-container"
             onClick={() => setIsEditingMetadata(true)}>
-
             <div className="project-title-header">
               <h3 className="project-title">{projectName}</h3>
               <button
@@ -513,18 +534,13 @@ const EditorAppView: React.FC<EditorAppProps> = ({
                   e.stopPropagation();
                   setIsEditingMetadata(true);
                 }}>
-
                 <EditIcon />
               </button>
             </div>
           </div>
-          {projectDescription &&
-            <div className="project-description">
-              <p>{projectDescription}</p>
-            </div>
-          }
         </div>
-        <div className="header-right">
+
+        <div className="menubar-right">
           <CompileButtons />
 
           <ShareProjectButton
@@ -538,14 +554,18 @@ const EditorAppView: React.FC<EditorAppProps> = ({
               className="header-backup-indicator"
               currentProjectId={sessionStorage.getItem('currentProjectId')}
               isInEditor={true} />
-
           }
           {!isOfflineMode &&
             <CollabStatusIndicator
               className="header-collab-status"
               docUrl={docUrl} />
-
           }
+          <NotificationCenter
+            notifications={notifications}
+            onClear={(id) => setNotifications((n) => n.filter((x) => x.id !== id))}
+            onClearAll={() => { setNotifications([]); clearAllActivities(); }}
+          />
+          <ThemeToggleButton className="menubar-theme-toggle" />
           <SettingsButton className="header-settings-button" />
           <UserDropdown
             username={user?.username || ''}
@@ -555,9 +575,8 @@ const EditorAppView: React.FC<EditorAppProps> = ({
             onOpenDeleteAccount={() => setIsDeleteAccountModalOpen(true)}
             onOpenUpgrade={() => setShowGuestUpgradeModal(true)}
             isGuest={isGuestUser(user)} />
-
         </div>
-      </header>
+      </nav>
 
       {doc?.documents &&
         <FileDocumentController
@@ -571,42 +590,28 @@ const EditorAppView: React.FC<EditorAppProps> = ({
           docUrl={docUrl}
           targetDocId={targetDocId}
           targetFilePath={targetFilePath} />
-
       }
 
-      <footer>
-
-        <div className="project-type-badge">{t('Typesetter: ')}
-          <TypesetterInfo type={projectType} />
+      <div className="statusbar">
+        <div className="statusbar-left">
+          <div className="project-type-badge">
+            <TypesetterInfo type={projectType} />
+          </div>
         </div>
-
-        <p className="read-the-docs">{t('Built with TeXlyre')}
-
-          <a href="https://texlyre.github.io" target="_blank" rel="noreferrer">
-            <img src={texlyreLogo} className="logo" alt={t('TeXlyre logo')} />
+        <div className="statusbar-right">
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowKeyboardShortcuts(true); }}>
+            {t('Keyboard Map')}
           </a>
-          <span className="legal-links">
+          <span className="statusbar-separator">•</span>
+          <a href="https://texlyre.github.io/docs/intro" target="_blank" rel="noreferrer">{t('Docs')}</a>
+          <span className="statusbar-separator">•</span>
+          <a href="https://github.com/TeXlyre/texlyre" target="_blank" rel="noreferrer">{t('Source')}</a>
+          <span className="statusbar-separator">•</span>
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowPrivacy(true); }}>{t('Privacy')}</a>
+        </div>
+      </div>
 
-            <br /> <a href="#" onClick={(event) => {
-              event.preventDefault();
-              setShowKeyboardShortcuts(true);
-            }} className="shortcuts-link">{t('Keyboard Map')}
-
-            </a>
-            {' '} • <a href="https://texlyre.github.io/docs/intro" target="_blank" rel="noreferrer">{t('Documentation')}
-
-            </a>
-            {' '} • <a href="https://github.com/TeXlyre/texlyre" target="_blank" rel="noreferrer">{t('Source Code')}
-
-            </a>
-            {' '} • <a href="#" onClick={(event) => {
-              event.preventDefault();
-              setShowPrivacy(true);
-            }} className="privacy-link">{t('Privacy')}</a>
-          </span>
-        </p>
-        <ChatPanel className="footer-chat" />
-      </footer>
+      <ChatPanel />
 
       <KeyboardShortcutsModal
         isOpen={showKeyboardShortcuts}

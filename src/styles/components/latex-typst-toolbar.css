@@ -1,15 +1,16 @@
 .codemirror-toolbar {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
-    align-content: flex-start;
-    gap: 2px;
-    padding: var(--space-xs);
+    gap: 1px;
+    padding: 0 6px;
     background-color: var(--pico-background) !important;
     border-bottom: 1px solid var(--accent-border);
     position: relative;
     flex-shrink: 0;
     width: auto !important;
+    height: 30px;
+    overflow: hidden;
 }
 
 .codemirror-toolbar::after {
@@ -23,10 +24,22 @@
     padding: auto !important;
 }
 
+.codemirror-toolbar__split {
+    width: 1px;
+    height: 14px;
+    background-color: var(--accent-border);
+    margin: 0 3px;
+    flex-shrink: 0;
+}
+
+.codemirror-toolbar__space {
+    flex: 1;
+}
+
 .ͼ1 .codemirror-toolbar__item {
-    height: 32px !important;
-    padding-top: var(--space-xs);
-    padding-bottom: auto;
+    height: 22px !important;
+    padding: 0 5px;
+    border-radius: 3px;
 }
 
 .ͼ1 .codemirror-toolbar__item svg {
@@ -34,8 +47,8 @@
 }
 
 .ͼ1 .codemirror-toolbar__item:hover {
-    color: var(--pico-primary);
-    /* background-color: var(--pico-primary-inverse); */
+    background-color: var(--hover-background);
+    color: var(--text-color);
 }
 
 .codemirror-toolbar-space {
@@ -170,18 +183,17 @@
 .codemirror-toolbar [data-item="undo"],
 .codemirror-toolbar [data-item="redo"],
 .codemirror-toolbar [data-item="fullScreen"] {
-    /* background-color: var(--pico-primary); */
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--pico-primary);
-    color: var(--pico-primary);
+    border-radius: 3px;
+    border: none;
+    color: var(--pico-secondary);
     padding-top: 0;
 }
 
 .codemirror-toolbar [data-item="undo"]:hover,
 .codemirror-toolbar [data-item="redo"]:hover,
 .codemirror-toolbar [data-item="fullScreen"]:hover {
-    background-color: var(--pico-primary);
-    color: var(--pico-primary-inverse);
+    background-color: var(--hover-background);
+    color: var(--text-color);
 }
 
 .codemirror-toolbar [data-item="typst-row-add-before"],

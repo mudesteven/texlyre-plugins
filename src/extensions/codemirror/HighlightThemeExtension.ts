@@ -1,7 +1,6 @@
 // src/extensions/codemirror/HighlightThemeExtension.ts
 import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import type { Extension } from '@codemirror/state';
-import { oneDark } from '@codemirror/theme-one-dark';
 import {
     abcdef, abyss, androidstudio, andromeda, atomone, aura,
     basicLight, basicDark, bbedit, bespin, copilot, darcula, dracula,
@@ -15,8 +14,8 @@ import {
 import type { HighlightTheme } from '../../types/editor';
 
 const APP_THEME_MAP: Record<string, HighlightTheme> = {
-    dark: 'dark',
-    light: 'light',
+    dark: 'nord',
+    light: 'xcodeLight',
     monokai: 'monokai',
     tomorrow_night_blue: 'tomorrowNightBlue',
     github_light: 'githubLight',
@@ -26,8 +25,8 @@ const APP_THEME_MAP: Record<string, HighlightTheme> = {
 
 const THEME_EXTENSION_MAP: Record<HighlightTheme, Extension> = {
     auto: syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-    light: syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-    dark: oneDark,
+    light: xcodeLight,
+    dark: nord,
     abcdef: abcdef,
     abyss: abyss,
     androidstudio: androidstudio,

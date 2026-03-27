@@ -8,8 +8,8 @@
 .editor-container {
 	height: 100%;
 	overflow: hidden;
-	border-radius: var(--radius-lg);
-	background-color: var(--pico-secondary-background);
+	border-radius: 0;
+	background-color: var(--pico-background);
 	display: flex;
 	flex-direction: column;
 	color: var(--text-color);

@@ -1,3 +1,45 @@
+/* ── Nord Dark (default) ──────────────────────────── */
+:root,
+[data-theme="dark"] {
+	--pico-background: #2e3440;
+	--pico-secondary-background: #3b4252;
+	--pico-primary: #88c0d0;
+	--pico-primary-hover: #9dd0e0;
+	--pico-primary-focus: rgba(136, 192, 208, 0.16);
+	--pico-primary-inverse: #2e3440;
+	--pico-secondary: #7c8fa3;
+	--pico-secondary-background: #3b4252;
+	--pico-muted-color: #616e88;
+	--pico-muted-border-color: #434c5e;
+	--pico-color: #eceff4;
+	--text-color: #eceff4;
+	--accent-border: #434c5e;
+	--border-color: #434c5e;
+	--accent-background: #3b4252;
+	--hover-background: #434c5e;
+	color-scheme: dark;
+}
+
+/* ── Nord Light ───────────────────────────────────── */
+[data-theme="light"] {
+	--pico-background: #eceff4;
+	--pico-secondary-background: #e5e9f0;
+	--pico-primary: #5e81ac;
+	--pico-primary-hover: #4c6d96;
+	--pico-primary-focus: rgba(94, 129, 172, 0.14);
+	--pico-primary-inverse: #eceff4;
+	--pico-secondary: #6b7d99;
+	--pico-secondary-background: #e5e9f0;
+	--pico-muted-color: #8898b0;
+	--pico-muted-border-color: #d8dee9;
+	--pico-color: #2e3440;
+	--text-color: #2e3440;
+	--accent-border: #d8dee9;
+	--border-color: #d8dee9;
+	--accent-background: #e5e9f0;
+	color-scheme: light;
+}
+
 :root {
 	/* Component Dimensions */
 	--sidebar-width: 250px;
@@ -27,6 +69,7 @@
 	--button-height-xl: 56px;
 
 	/* Border Radius */
+	--radius-xs: 2px;
 	--radius-sm: 4px;
 	--radius-md: 6px;
 	--radius-lg: 8px;
@@ -59,4 +102,15 @@
 	--color-info: #007bff;
 	--color-secondary: #6c757d;
 
+	/* Statusbar (frost blue — same in both themes) */
+	--statusbar-bg: #5e81ac;
+	--statusbar-fg: rgba(236, 239, 244, 0.82);
+}
+
+[data-theme="dark"] {
+	--hover-background: #434c5e;
+}
+
+[data-theme="light"] {
+	--hover-background: #dde0e5;
 }

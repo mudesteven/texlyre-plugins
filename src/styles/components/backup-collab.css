@@ -2,6 +2,77 @@
 	margin-right: 0;
 }
 
+/* ── Menubar: icon-only compact style ────────────── */
+.menubar .backup-status-indicator.main-button,
+.menubar .collab-status-indicator.main-button {
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	border: none;
+	background: none;
+	opacity: 0.75;
+	border-radius: var(--radius-sm);
+}
+
+.menubar .backup-button-group .backup-status-indicator.main-button,
+.menubar .collab-button-group .collab-status-indicator.main-button {
+	border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.menubar .backup-status-indicator.main-button:hover,
+.menubar .collab-status-indicator.main-button:hover {
+	background-color: var(--hover-background);
+	opacity: 1;
+}
+
+.menubar .backup-status-indicator.main-button.connected,
+.menubar .collab-status-indicator.main-button.connected,
+.menubar .backup-status-indicator.main-button.disconnected,
+.menubar .collab-status-indicator.main-button.disconnected {
+	background: none;
+}
+
+.menubar .backup-label,
+.menubar .collab-label {
+	display: none;
+}
+
+.menubar .backup-button-group .backup-status-indicator.main-button svg,
+.menubar .collab-button-group .collab-status-indicator.main-button svg {
+	margin-right: 0;
+}
+
+.menubar .backup-status-indicator .status-dot,
+.menubar .collab-status-indicator .status-dot {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+	width: 6px;
+	height: 6px;
+	margin-right: 0;
+}
+
+.menubar .backup-button-group,
+.menubar .collab-button-group {
+	position: relative;
+}
+
+.menubar .backup-dropdown-toggle,
+.menubar .collab-dropdown-toggle {
+	height: 30px;
+	width: 16px;
+	border: none;
+	background: none;
+	opacity: 0.6;
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+.menubar .backup-dropdown-toggle:hover,
+.menubar .collab-dropdown-toggle:hover {
+	background-color: var(--hover-background);
+	opacity: 1;
+}
+
 .backup-status-indicator:hover {
 	background-color: rgba(var(--pico-primary-rgb), 0.1) !important;
 }

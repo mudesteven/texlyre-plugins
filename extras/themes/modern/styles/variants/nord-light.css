@@ -1,0 +1,16 @@
+/* extras/themes/modern/styles/variants/nord-light.css */
+/* Nord Light — arctic snow palette */
+[data-theme="modern-nord-light"][data-theme-plugin="modern"] {
+	--accent-background: #e5e9f0;    /* snow storm 2 */
+	--accent-border: #d8dee9;        /* snow storm 1 */
+	--text-color: #2e3440;           /* polar night 1 */
+	--text-muted: #6b7d99;
+	--editor-background: #eceff4;
+	--editor-text: #2e3440;
+	--sidebar-background: #e5e9f0;
+	--sidebar-border: #d8dee9;
+	--selection-bg: rgba(94, 129, 172, 0.15);
+	--scrollbar-track: #e5e9f0;
+	--scrollbar-thumb: #d8dee9;
+	--border-color: #d8dee9;
+}

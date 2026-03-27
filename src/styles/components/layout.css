@@ -1,0 +1,489 @@
+/* Overleaf-style 3-panel layout with Nord theming */
+
+/* ── Menubar ─────────────────────────────────────── */
+.menubar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 40px;
+	min-height: 40px;
+	padding: 0 10px;
+	background-color: var(--pico-secondary-background);
+	border-bottom: 1px solid var(--accent-border, rgba(0,0,0,0.12));
+	gap: 1px;
+	flex-shrink: 0;
+	z-index: var(--z-sticky);
+}
+
+.menubar-left,
+.menubar-right {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	flex-shrink: 0;
+}
+
+.menubar-left {
+	gap: var(--space-sm);
+	flex: 0 0 auto;
+}
+
+.menubar-center {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+}
+
+.menubar-center .project-title-container {
+	pointer-events: auto;
+}
+
+.menubar-right {
+	gap: var(--space-xs);
+	margin-left: auto;
+}
+
+.back-btn {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	padding: 0 9px;
+	height: 30px;
+	background: none;
+	border: none;
+	border-radius: var(--radius-sm);
+	color: var(--text-color);
+	font-size: 12.5px;
+	font-weight: 400;
+	opacity: 0.75;
+	cursor: pointer;
+	transition: background-color var(--transition-fast), opacity var(--transition-fast);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.back-btn:hover {
+	background-color: var(--hover-background);
+	opacity: 1;
+}
+
+.menubar-logo {
+	height: 1.5em;
+	width: 1.5em;
+	object-fit: contain;
+	flex-shrink: 0;
+	opacity: 0.85;
+	transition: opacity var(--transition-fast);
+}
+
+.menubar-logo:hover {
+	opacity: 1;
+}
+
+.menubar-divider {
+	width: 1px;
+	height: 20px;
+	background-color: var(--accent-border, rgba(0,0,0,0.15));
+	flex-shrink: 0;
+}
+
+/* Project title in menubar (centered) */
+.menubar .project-title-container {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.menubar .project-title-container:hover {
+	border-color: var(--accent-border);
+	background: var(--hover-background);
+	border-radius: var(--radius-sm);
+}
+
+.menubar .project-title-header {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	min-width: 0;
+}
+
+.menubar .project-title {
+	font-size: 0.85rem;
+	font-weight: 600;
+	margin: 0;
+	color: var(--text-color);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.menubar .project-description {
+	display: none; /* hide description in compact menubar */
+}
+
+.menubar .edit-title-button {
+	display: flex;
+	align-items: center;
+	padding: 2px;
+	background: none;
+	border: none;
+	color: var(--text-color);
+	opacity: 0.5;
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	flex-shrink: 0;
+}
+
+.menubar .edit-title-button:hover {
+	opacity: 1;
+	background-color: var(--pico-primary-focus);
+}
+
+/* Icon buttons in menubar */
+.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--text-color);
+	opacity: 0.75;
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	transition: opacity var(--transition-fast), background-color var(--transition-fast);
+	min-width: 30px;
+	width: 30px;
+	height: 30px;
+}
+
+.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle):hover {
+	opacity: 1;
+	background-color: var(--hover-background);
+}
+
+/* Compile button: green, compact */
+.menubar .header-compile-button .compile-button,
+.menubar .header-typst-compile-button .compile-button {
+	height: 28px;
+	padding: 0 10px;
+	font-size: 0.78rem;
+	background-color: var(--color-success);
+	color: #fff;
+	border: none;
+	font-weight: 700;
+	border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.menubar .header-compile-button .compile-button:hover:not(:disabled),
+.menubar .header-typst-compile-button .compile-button:hover:not(:disabled) {
+	background-color: #22943d;
+	border: none;
+}
+
+.menubar .header-compile-button .dropdown-toggle,
+.menubar .header-typst-compile-button .dropdown-toggle {
+	height: 28px;
+	background-color: var(--color-success);
+	color: #fff;
+	border: none;
+	border-left: 1px solid rgba(0,0,0,0.15);
+}
+
+.menubar .header-compile-button .dropdown-toggle:hover,
+.menubar .header-typst-compile-button .dropdown-toggle:hover {
+	background-color: #22943d;
+	border-left: 1px solid rgba(0,0,0,0.15);
+}
+
+.menubar .output-export-button {
+	height: 28px;
+	padding: 0 8px;
+	font-size: 0.78rem;
+}
+
+/* Share button: green pill like mockup */
+.menubar .share-button.main-button {
+	background-color: var(--color-success);
+	color: #fff;
+	border: none;
+	height: 28px;
+	padding: 0 12px;
+	font-weight: 700;
+	font-size: 12px;
+	border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+	opacity: 1;
+}
+
+.menubar .share-button.main-button:hover {
+	background-color: #22943d;
+	border: none;
+}
+
+.menubar .share-button.dropdown-toggle {
+	background-color: var(--color-success);
+	color: #fff;
+	border: none;
+	height: 28px;
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	border-left: 1px solid rgba(0,0,0,0.15);
+	opacity: 1;
+}
+
+.menubar .share-button.dropdown-toggle:hover {
+	background-color: #22943d;
+	border-left: 1px solid rgba(0,0,0,0.15);
+}
+
+/* ── Workspace (the 3-panel area) ────────────────── */
+.workspace {
+	flex: 1;
+	display: flex;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* The main-content already serves as the workspace in FileDocumentController */
+.main-content {
+	display: flex;
+	flex: 1;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+	gap: 0;
+}
+
+/* ── Status Bar ──────────────────────────────────── */
+.statusbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 20px;
+	min-height: 20px;
+	padding: 0 10px;
+	background-color: var(--statusbar-bg);
+	border-top: none;
+	font-size: 11px;
+	color: var(--statusbar-fg);
+	flex-shrink: 0;
+	gap: 12px;
+	overflow: hidden;
+}
+
+.statusbar-left,
+.statusbar-right {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+}
+
+.statusbar * {
+	color: var(--statusbar-fg);
+	font-size: 11px;
+}
+
+.statusbar-right a {
+	color: var(--statusbar-fg);
+	text-decoration: none;
+	opacity: 0.8;
+	transition: opacity var(--transition-fast);
+}
+
+.statusbar-right a:hover {
+	opacity: 1;
+	color: #eceff4;
+}
+
+.statusbar-separator {
+	opacity: 0.4;
+	color: var(--statusbar-fg);
+}
+
+/* Keep project-type-badge inline */
+.project-type-badge {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	font-size: 0.7rem;
+	color: var(--pico-secondary, #888);
+}
+
+/* ── Panel borders in workspace ──────────────────── */
+.sidebar-container {
+	border-right: 1px solid var(--accent-border, rgba(0,0,0,0.1));
+}
+
+.latex-output-container,
+.typst-output-container {
+	border-left: 1px solid var(--accent-border, rgba(0,0,0,0.1));
+}
+
+/* Chat panel is now self-positioning (see ChatPanel.tsx) */
+
+/* ── Notification center ─────────────────────────── */
+.notification-btn {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--text-color);
+	opacity: 0.75;
+	cursor: pointer;
+	border-radius: var(--radius-sm);
+	transition: opacity var(--transition-fast), background-color var(--transition-fast);
+}
+
+.notification-btn:hover {
+	opacity: 1;
+	background-color: var(--hover-background);
+}
+
+.notification-badge {
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	background: var(--color-error);
+	color: #fff;
+	border-radius: 8px;
+	font-size: 9px;
+	font-weight: 700;
+	min-width: 14px;
+	height: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 3px;
+	border: 1.5px solid var(--pico-secondary-background);
+	pointer-events: none;
+}
+
+.notification-dropdown {
+	position: fixed;
+	width: 280px;
+	background-color: var(--pico-secondary-background);
+	border: 1px solid var(--accent-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	z-index: var(--z-popup);
+	overflow: hidden;
+}
+
+.notification-dropdown-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--accent-border);
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.notif-clear-all {
+	background: none;
+	border: none;
+	color: var(--pico-primary);
+	font-size: 11px;
+	cursor: pointer;
+	padding: 0;
+}
+
+.notif-clear-all:hover {
+	text-decoration: underline;
+}
+
+.notification-empty {
+	padding: 16px 12px;
+	text-align: center;
+	font-size: 12px;
+	color: var(--pico-secondary);
+}
+
+.notification-list {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.notification-item {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid var(--accent-border);
+	font-size: 12px;
+}
+
+.notification-item:last-child {
+	border-bottom: none;
+}
+
+.notification-item:hover {
+	background-color: var(--hover-background);
+}
+
+.notif-message {
+	flex: 1;
+	color: var(--text-color);
+	line-height: 1.4;
+}
+
+.notif-dismiss {
+	background: none;
+	border: none;
+	color: var(--pico-secondary);
+	cursor: pointer;
+	font-size: 14px;
+	padding: 0;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.notif-dismiss:hover {
+	color: var(--color-error);
+}
+
+.notif-success .notif-message::before { content: '✓ '; color: var(--color-success); }
+.notif-error .notif-message::before   { content: '✕ '; color: var(--color-error); }
+.notif-warning .notif-message::before { content: '⚠ '; color: var(--color-warning); }
+
+/* ── User dropdown compact in menubar ────────────── */
+.menubar .user-dropdown-button {
+	height: 30px;
+	padding: 0 8px;
+	font-size: 0.78rem;
+	border: none;
+	background-color: transparent;
+	border-radius: var(--radius-sm);
+	opacity: 0.85;
+	transition: background-color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.menubar .user-dropdown-button:hover {
+	background-color: var(--hover-background);
+	opacity: 1;
+}
+
+.menubar .user-dropdown-button span {
+	max-width: 90px;
+	font-size: 0.78rem;
+}
+
+/* Override the portal-rendered user-dropdown-menu z-index */
+.user-dropdown-menu[style] {
+	z-index: var(--z-popup) !important;
+}
+
+/* ── Misc header cleanup ─────────────────────────── */
+.menubar .guest-upgrade-banner {
+	display: none; /* handled separately */
+}

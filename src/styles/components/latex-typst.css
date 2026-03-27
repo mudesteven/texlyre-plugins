@@ -1,7 +1,7 @@
 .latex-output-container,
 .typst-output-container {
 	background-color: var(--pico-secondary-background);
-	border-radius: var(--radius-lg);
+	border-radius: 0;
 	border-left: 1px solid var(--accent-border);
 	width: var(--latex-output-width);
 	display: flex;
@@ -39,8 +39,58 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: var(--space-sm);
+	padding: 0 8px;
+	height: 38px;
 	border-bottom: 1px solid var(--accent-border);
+	flex-shrink: 0;
+	background-color: var(--pico-secondary-background);
+	gap: 4px;
+}
+
+/* Compact view tabs in output panel - match mockup's pdf-toolbar style */
+.output-header .view-tabs {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	flex: 1;
+}
+
+.output-header .view-tabs .tab-button {
+	height: 26px;
+	padding: 0 8px;
+	border: none;
+	background: transparent;
+	color: var(--pico-secondary);
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	font-size: 11px;
+	font-weight: 600;
+	white-space: nowrap;
+	transition: background-color var(--transition-fast), color var(--transition-fast);
+	display: flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.output-header .view-tabs .tab-button:hover:not(:disabled) {
+	background-color: var(--hover-background);
+	color: var(--text-color);
+}
+
+.output-header .view-tabs .tab-button.active {
+	background-color: var(--pico-primary);
+	color: var(--pico-primary-inverse);
+}
+
+.output-header .view-tabs .tab-button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.output-header .view-tabs .status-dot {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
 	flex-shrink: 0;
 }
 

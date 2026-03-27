@@ -1,5 +1,17 @@
 // extras/themes/modern/colors.ts
 export const themes = {
+	// Nord Light — arctic snow palette
+	'modern-nord-light': {
+		background: '#eceff4',
+		color: '#2e3440',
+		'text-color': '#2e3440',
+		primary: '#5e81ac',
+		'primary-hover': '#4c6d96',
+		'primary-focus': 'rgba(94, 129, 172, 0.14)',
+		'primary-inverse': '#eceff4',
+		'secondary-background': '#e5e9f0',
+		secondary: '#6b7d99',
+	},
 	// Flexoki — ink on aged paper
 	'modern-light': {
 		background: '#fffcf0',

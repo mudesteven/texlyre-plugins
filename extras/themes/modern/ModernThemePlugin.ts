@@ -41,10 +41,11 @@ const createModernTheme = (): ThemePlugin => {
 		version: '1.0.0',
 		type: 'theme',
 		themes: [
-			{ id: 'modern-light', name: t('Modern Light (Flexoki)'), isDark: false },
+			{ id: 'modern-nord', name: t('Modern Nord'), isDark: true },
+			{ id: 'modern-nord-light', name: t('Modern Nord Light'), isDark: false },
 			{ id: 'modern-dark', name: t('Modern Dark (Rosé Pine)'), isDark: true },
 			{ id: 'modern-everforest', name: t('Modern Everforest'), isDark: true },
-			{ id: 'modern-nord', name: t('Modern Nord'), isDark: true },
+			{ id: 'modern-light', name: t('Modern Light (Flexoki)'), isDark: false },
 		],
 
 		applyTheme(variantId: string): void {

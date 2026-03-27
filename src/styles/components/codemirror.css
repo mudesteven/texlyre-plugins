@@ -2,54 +2,58 @@
    Syntax highlighting token variables
    ============================================================ */
 
-:root {
-	--cm-color-keyword: #6f42c1;
-	--cm-color-def-keyword: #d73a49;
-	--cm-color-comment: var(--pico-muted-color, #6a737d);
-	--cm-color-atom: #0366d6;
-	--cm-color-atom-bg: rgba(3, 102, 214, 0.1);
-	--cm-color-property: #e36209;
-	--cm-color-string: #032f62;
-	--cm-color-number: #005cc5;
-	--cm-color-variable: #6f42c1;
-	--cm-color-operator: #d73a49;
-	--cm-color-punctuation: var(--pico-muted-color, #586069);
-	--cm-color-brace: var(--pico-color, #24292e);
-	--cm-color-ctrl: #0000cc;
-	--cm-color-env: #008800;
-	--cm-color-env-name: #990000;
-	--cm-color-math: #0086b3;
-	--cm-color-meta: #d73a49;
-	--cm-color-link: #0366d6;
-	--cm-color-argument: #dd1144;
-	--cm-color-editor-text: #24292e;
-	--cm-color-gutter-text: #6a737d;
+/* Light mode — Nord light / xcode-inspired */
+:root, [data-theme="light"] {
+	--cm-color-keyword: #5e81ac;
+	--cm-color-def-keyword: #bf616a;
+	--cm-color-comment: #7a8799;
+	--cm-color-atom: #5e81ac;
+	--cm-color-atom-bg: rgba(94, 129, 172, 0.1);
+	--cm-color-property: #d08770;
+	--cm-color-string: #4e8d6e;
+	--cm-color-number: #7c5a8a;
+	--cm-color-variable: #3b4252;
+	--cm-color-operator: #5e81ac;
+	--cm-color-punctuation: #7a8799;
+	--cm-color-brace: #2e3440;
+	--cm-color-ctrl: #5e81ac;
+	--cm-color-env: #4e8d6e;
+	--cm-color-env-name: #bf616a;
+	--cm-color-math: #5e81ac;
+	--cm-color-meta: #bf616a;
+	--cm-color-link: #5e81ac;
+	--cm-color-argument: #bf616a;
+	--cm-color-editor-text: #2e3440;
+	--cm-color-gutter-text: #7a8799;
 	--cm-color-active-line-bg: rgba(0, 0, 0, 0.04);
+	--cm-selection-bg: rgba(94, 129, 172, 0.2);
 }
 
-[data-theme-mode="dark"] {
-	--cm-color-keyword: #b392f0;
-	--cm-color-def-keyword: #ff7b86;
-	--cm-color-comment: #7d8590;
-	--cm-color-atom: #58a6ff;
-	--cm-color-atom-bg: rgba(88, 166, 255, 0.15);
-	--cm-color-property: #ffa657;
-	--cm-color-string: #79c0ff;
-	--cm-color-number: #79c0ff;
-	--cm-color-variable: #b392f0;
-	--cm-color-operator: #ff7b86;
-	--cm-color-punctuation: #8b949e;
-	--cm-color-brace: #f0f6fc;
-	--cm-color-ctrl: #79c0ff;
-	--cm-color-env: #7ee787;
-	--cm-color-env-name: #ff7b86;
-	--cm-color-math: #79c0ff;
-	--cm-color-meta: #ff7b86;
-	--cm-color-link: #58a6ff;
-	--cm-color-argument: #ffa198;
-	--cm-color-editor-text: #ddd;
-	--cm-color-gutter-text: #999;
-	--cm-color-active-line-bg: rgba(255, 255, 255, 0.04);
+/* Dark mode — Nord dark */
+[data-theme="dark"] {
+	--cm-color-keyword: #81a1c1;
+	--cm-color-def-keyword: #bf616a;
+	--cm-color-comment: #616e88;
+	--cm-color-atom: #88c0d0;
+	--cm-color-atom-bg: rgba(136, 192, 208, 0.1);
+	--cm-color-property: #88c0d0;
+	--cm-color-string: #a3be8c;
+	--cm-color-number: #b48ead;
+	--cm-color-variable: #d8dee9;
+	--cm-color-operator: #81a1c1;
+	--cm-color-punctuation: #7a8799;
+	--cm-color-brace: #d8dee9;
+	--cm-color-ctrl: #88c0d0;
+	--cm-color-env: #a3be8c;
+	--cm-color-env-name: #88c0d0;
+	--cm-color-math: #88c0d0;
+	--cm-color-meta: #81a1c1;
+	--cm-color-link: #88c0d0;
+	--cm-color-argument: #ebcb8b;
+	--cm-color-editor-text: #d8dee9;
+	--cm-color-gutter-text: #4c566a;
+	--cm-color-active-line-bg: rgba(58, 66, 85, 0.5);
+	--cm-selection-bg: rgba(136, 192, 208, 0.2);
 }
 
 /* ============================================================
@@ -65,13 +69,12 @@
 .codemirror-editor-container .cm-editor {
 	height: 100%;
 	color: var(--cm-color-editor-text);
-	background-color: var(--pico-secondary-background) !important;
+	background-color: var(--pico-background) !important;
 }
 
 .codemirror-editor-container .cm-editor.cm-focused {
-	outline: 2px solid var(--pico-primary);
-	outline-offset: -2px;
-	background-color: var(--pico-secondary-background) !important;
+	outline: none;
+	background-color: var(--pico-background) !important;
 }
 
 .codemirror-editor-container .cm-scroller {
@@ -113,7 +116,7 @@
 }
 
 .codemirror-editor-container .cm-selectionBackground {
-	background-color: var(--pico-primary-focus, rgba(0, 123, 255, 0.2)) !important;
+	background-color: var(--cm-selection-bg, rgba(136, 192, 208, 0.2)) !important;
 }
 
 .codemirror-editor-container .cm-activeLine {

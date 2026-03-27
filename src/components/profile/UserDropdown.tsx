@@ -2,6 +2,7 @@
 import { t } from '@/i18n';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { UserIcon, UpgradeAccountIcon, TrashIcon, ExportIcon, EditIcon, LogoutIcon } from '../common/Icons';
 
@@ -25,28 +26,37 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   isGuest = false
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isOpen) return;
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)) {
+        btnRef.current && !btnRef.current.contains(target) &&
+        menuRef.current && !menuRef.current.contains(target)
+      ) {
         setIsOpen(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const getMenuPos = () => {
+    if (!btnRef.current) return { top: 48, right: 8 };
+    const rect = btnRef.current.getBoundingClientRect();
+    return { top: rect.bottom + 4, right: window.innerWidth - rect.right };
+  };
 
   const displayUsername = isGuest ? t('Guest User') : username;
+  const menuPos = getMenuPos();
 
   return (
-    <div className="user-dropdown-container" ref={dropdownRef}>
+    <div className="user-dropdown-container">
       <button
+        ref={btnRef}
         className={`user-dropdown-button ${isGuest ? 'guest' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
@@ -56,8 +66,12 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
         <span>{displayUsername}</span>
       </button>
 
-      {isOpen &&
-        <div className="user-dropdown-menu">
+      {isOpen && createPortal(
+        <div
+          ref={menuRef}
+          className="user-dropdown-menu"
+          style={{ position: 'fixed', top: menuPos.top, right: menuPos.right }}
+        >
           {!isGuest &&
             <>
               <button
@@ -127,8 +141,9 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
               </>
             }
           </button>
-        </div>
-      }
+        </div>,
+        document.body
+      )}
     </div>);
 
 };

@@ -17,14 +17,15 @@
 	position: sticky;
 	align-items: center;
 	gap: var(--space-xs);
-	padding: var(--space-sm);
-	background-color: var(--pico-background);
+	padding: 0 8px 0 12px;
+	height: 30px;
+	background-color: var(--pico-secondary-background);
 	border-bottom: 1px solid var(--accent-border);
-	font-size: var(--space-sd);
-	font-weight: 600;
-	color: var(--text-color);
+	font-size: 10px;
+	font-weight: 700;
+	color: var(--pico-secondary);
 	text-transform: uppercase;
-	letter-spacing: 0.05em;
+	letter-spacing: 0.7px;
 	flex-shrink: 0;
 }
 
@@ -42,7 +43,7 @@
 
 .outline-toggle-btn:hover {
 	color: var(--text-color);
-	background-color: var(--pico-primary-focus);
+	background-color: var(--hover-background);
 }
 
 .outline-header-title {
@@ -53,7 +54,7 @@
 .outline-section-count {
 	font-size: 0.65rem;
 	color: var(--pico-secondary);
-	background-color: var(--pico-primary-focus);
+	background-color: var(--hover-background);
 	padding: 2px 6px;
 	border-radius: 10px;
 	min-width: 16px;
@@ -101,11 +102,11 @@
 }
 
 .outline-section:hover {
-	background-color: var(--pico-primary-focus);
+	background-color: var(--hover-background);
 }
 
 .outline-section.current {
-	background-color: var(--pico-primary-focus);
+	background-color: var(--hover-background);
 	font-weight: 500;
 	border-left: 2px solid var(--pico-primary);
 }

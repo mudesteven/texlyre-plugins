@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TeXlyre – UI Mockup (Nord Dark + Light)</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   THEME TOKENS
+═══════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg0:        #2e3440;
+  --bg1:        #3b4252;
+  --bg2:        #434c5e;
+  --bg3:        #4c566a;
+  --fg0:        #eceff4;
+  --fg1:        #e5e9f0;
+  --fg2:        #d8dee9;
+  --fg3:        #7a8799;
+  --border:     #3f4a5a;
+  --frost1:     #88c0d0;
+  --frost2:     #81a1c1;
+  --frost3:     #5e81ac;
+  --green:      #a3be8c;
+  --green-fg:   #2e3440;
+  --red:        #bf616a;
+  --yellow:     #ebcb8b;
+  --orange:     #d08770;
+  --purple:     #b48ead;
+  --shadow:     0 4px 20px rgba(0,0,0,0.45);
+  --shadow-ctx: 0 4px 16px rgba(0,0,0,0.5);
+  --pdf-bg:     #232831;
+  --statusbar-bg: #5e81ac;
+  --cursor-line:#3a4255;
+  --sel:        rgba(136,192,208,0.15);
+  --scroll-thumb: #4c566a;
+}
+
+[data-theme="light"] {
+  --bg0:        #f0f2f5;
+  --bg1:        #e8eaed;
+  --bg2:        #dde0e5;
+  --bg3:        #c5cad4;
+  --fg0:        #2e3440;
+  --fg1:        #3b4252;
+  --fg2:        #4c566a;
+  --fg3:        #7a8799;
+  --border:     #c8cdd6;
+  --frost1:     #5e81ac;
+  --frost2:     #4a6d99;
+  --frost3:     #3a5a8a;
+  --green:      #4e8d6e;
+  --green-fg:   #ffffff;
+  --red:        #bf616a;
+  --yellow:     #8f6a00;
+  --orange:     #a05a30;
+  --purple:     #7c5a8a;
+  --shadow:     0 4px 20px rgba(0,0,0,0.12);
+  --shadow-ctx: 0 4px 16px rgba(0,0,0,0.16);
+  --pdf-bg:     #d8dce3;
+  --statusbar-bg: #5e81ac;
+  --cursor-line:#e0e4eb;
+  --sel:        rgba(94,129,172,0.15);
+  --scroll-thumb: #b0b8c8;
+}
+
+/* ═══════════════════════════════════════════════════
+   RESET / BASE
+═══════════════════════════════════════════════════ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg0); color: var(--fg1);
+  height: 100vh; display: flex; flex-direction: column;
+  font-size: 13px; overflow: hidden;
+  transition: background 0.2s, color 0.2s;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 3px; }
+
+/* ═══════════════════════════════════════════════════
+   MENU BAR
+═══════════════════════════════════════════════════ */
+.menubar {
+  display: flex; align-items: center;
+  background: var(--bg1); height: 40px;
+  padding: 0 10px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; gap: 1px;
+}
+.menubar-logo {
+  font-weight: 800; font-size: 15px; color: var(--frost1);
+  margin-right: 12px; letter-spacing: 0.4px; white-space: nowrap;
+  user-select: none;
+}
+.menubar-logo span { color: var(--green); }
+
+.menu-item {
+  padding: 0 9px; height: 40px; display: flex; align-items: center;
+  cursor: pointer; border-radius: 4px; color: var(--fg2);
+  transition: background 0.1s, color 0.1s; white-space: nowrap;
+  font-size: 12.5px;
+}
+.menu-item:hover { background: var(--bg2); color: var(--fg0); }
+
+.menubar-sep { flex: 1; }
+
+.project-name-wrap {
+  display: flex; align-items: center; gap: 5px;
+  padding: 4px 10px; border-radius: 4px; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.1s;
+}
+.project-name-wrap:hover { border-color: var(--border); background: var(--bg2); }
+.project-name { font-weight: 600; color: var(--fg0); font-size: 13px; }
+.edit-icon { color: var(--fg3); font-size: 11px; }
+
+.header-right { display: flex; align-items: center; gap: 5px; }
+
+.avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  background: var(--frost3); display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 10px;
+  color: var(--fg0); cursor: pointer;
+  border: 2px solid var(--bg1); margin-left: -6px;
+}
+.avatar:first-child { margin-left: 0; }
+.avatar.green { background: var(--green); color: var(--green-fg); }
+.avatars-wrap { display: flex; margin-right: 2px; }
+
+.icon-btn {
+  width: 30px; height: 30px; display: flex; align-items: center;
+  justify-content: center; border-radius: 4px; cursor: pointer;
+  color: var(--fg2); border: none; background: transparent; font-size: 14px;
+  transition: background 0.1s;
+}
+.icon-btn:hover { background: var(--bg2); color: var(--fg0); }
+
+.share-btn {
+  background: var(--green); color: var(--green-fg); border: none;
+  padding: 0 14px; height: 28px; border-radius: 4px; font-weight: 700;
+  cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;
+  transition: filter 0.1s;
+}
+.share-btn:hover { filter: brightness(1.1); }
+
+/* theme toggle */
+.theme-toggle {
+  width: 30px; height: 30px; display: flex; align-items: center;
+  justify-content: center; border-radius: 4px; cursor: pointer;
+  color: var(--fg2); border: none; background: transparent; font-size: 16px;
+  transition: background 0.1s;
+}
+.theme-toggle:hover { background: var(--bg2); }
+
+/* ═══════════════════════════════════════════════════
+   WORKSPACE
+═══════════════════════════════════════════════════ */
+.workspace { display: flex; flex: 1; overflow: hidden; }
+
+/* ═══════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════ */
+.sidebar {
+  width: 232px; flex-shrink: 0;
+  background: var(--bg1); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  transition: background 0.2s;
+}
+
+.sidebar-tabs {
+  display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.sidebar-tab {
+  flex: 1; height: 32px; display: flex; align-items: center;
+  justify-content: center; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--fg3); cursor: pointer;
+  border-bottom: 2px solid transparent; transition: all 0.1s;
+  font-weight: 600;
+}
+.sidebar-tab.active { color: var(--frost1); border-bottom-color: var(--frost1); }
+.sidebar-tab:hover:not(.active) { color: var(--fg1); background: var(--bg2); }
+
+.sidebar-explorer-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 6px 0 12px; height: 30px; flex-shrink: 0;
+}
+.sidebar-section-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px;
+  color: var(--fg3); font-weight: 700; user-select: none;
+}
+.sb-actions { display: flex; gap: 1px; }
+.sb-btn {
+  width: 24px; height: 24px; display: flex; align-items: center;
+  justify-content: center; border-radius: 3px; cursor: pointer;
+  color: var(--fg3); border: none; background: transparent; font-size: 13px;
+  transition: background 0.1s, color 0.1s;
+}
+.sb-btn:hover { background: var(--bg2); color: var(--fg0); }
+
+.file-tree { flex: 1; overflow-y: auto; padding: 2px 0; }
+
+/* folder row */
+.tree-folder {
+  padding: 4px 6px 4px 8px; cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  color: var(--fg1); position: relative; user-select: none;
+  border-radius: 3px; margin: 0 4px;
+}
+.tree-folder:hover { background: var(--bg2); }
+.tree-folder:hover .row-menu { opacity: 1; }
+.folder-chevron { font-size: 9px; color: var(--fg3); width: 10px; flex-shrink: 0; line-height: 1; }
+.folder-icon-glyph { font-size: 13px; flex-shrink: 0; }
+.folder-label { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* file row */
+.tree-file {
+  padding: 3px 6px 3px 8px; cursor: pointer;
+  color: var(--fg2); display: flex; align-items: center; gap: 5px;
+  position: relative; user-select: none; border-radius: 3px; margin: 0 4px;
+}
+.tree-file:hover { background: var(--bg2); color: var(--fg1); }
+.tree-file:hover .row-menu { opacity: 1; }
+.tree-file.active { background: var(--sel); color: var(--frost1); }
+.tree-file.active .row-menu { opacity: 1; }
+.file-glyph { font-size: 12px; opacity: 0.75; flex-shrink: 0; }
+.file-label { flex: 1; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* indented children */
+.tree-children { padding-left: 14px; }
+
+/* 3-dot button */
+.row-menu {
+  opacity: 0; flex-shrink: 0;
+  width: 18px; height: 18px; display: flex; align-items: center;
+  justify-content: center; border-radius: 3px; color: var(--fg3);
+  font-size: 13px; transition: opacity 0.1s, background 0.1s;
+  cursor: pointer; line-height: 1; padding-bottom: 3px;
+}
+.row-menu:hover { background: var(--bg3); color: var(--fg0); }
+
+/* context menu */
+.ctx-menu {
+  position: absolute; right: 4px; top: 26px; z-index: 200;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: 5px; box-shadow: var(--shadow-ctx);
+  min-width: 158px; padding: 3px 0; display: none;
+}
+.ctx-item {
+  padding: 5px 12px; cursor: pointer; color: var(--fg1); font-size: 12px;
+  display: flex; align-items: center; gap: 8px; transition: background 0.1s;
+}
+.ctx-item:hover { background: var(--bg2); color: var(--fg0); }
+.ctx-item .ci { font-size: 12px; opacity: 0.8; width: 14px; text-align: center; }
+.ctx-item.danger { color: var(--red); }
+.ctx-item.danger:hover { background: rgba(191,97,106,0.1); }
+.ctx-sep { height: 1px; background: var(--border); margin: 3px 0; }
+.show-ctx .ctx-menu { display: block; }
+
+/* ═══════════════════════════════════════════════════
+   EDITOR PANEL
+═══════════════════════════════════════════════════ */
+.editor-panel {
+  flex: 1; display: flex; flex-direction: column;
+  overflow: hidden; background: var(--bg0); transition: background 0.2s;
+}
+
+/* tabs */
+.editor-tabs {
+  display: flex; align-items: flex-end; background: var(--bg1);
+  border-bottom: 1px solid var(--border); height: 34px;
+  padding: 0 6px 0 4px; gap: 1px; flex-shrink: 0;
+}
+.editor-tab {
+  padding: 0 12px; height: 32px; display: flex; align-items: center;
+  border-radius: 4px 4px 0 0; cursor: pointer;
+  color: var(--fg3); font-size: 12px; gap: 6px;
+  border: 1px solid transparent; border-bottom: none;
+  transition: background 0.1s, color 0.1s;
+}
+.editor-tab.active {
+  color: var(--fg0); background: var(--bg0);
+  border-color: var(--border); border-bottom-color: var(--bg0);
+  margin-bottom: -1px;
+}
+.editor-tab:hover:not(.active) { background: var(--bg2); color: var(--fg2); }
+.tab-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); flex-shrink: 0; }
+.tab-close {
+  opacity: 0; font-size: 10px; line-height: 1;
+  padding: 1px 2px; border-radius: 2px;
+}
+.editor-tab:hover .tab-close,
+.editor-tab.active .tab-close { opacity: 0.45; }
+.tab-close:hover { opacity: 1 !important; color: var(--red); background: rgba(191,97,106,0.15); }
+
+/* inline toolbar — inside editor, below tabs */
+.editor-toolbar {
+  display: flex; align-items: center; gap: 1px;
+  background: var(--bg0); height: 30px; padding: 0 6px;
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.tb-btn {
+  height: 22px; min-width: 22px; padding: 0 5px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 3px; cursor: pointer; color: var(--fg2);
+  font-size: 12px; font-weight: 600; border: none; background: transparent;
+  transition: background 0.1s, color 0.1s;
+}
+.tb-btn:hover { background: var(--bg2); color: var(--fg0); }
+.tb-sep { width: 1px; height: 14px; background: var(--border); margin: 0 3px; flex-shrink: 0; }
+.tb-select {
+  background: var(--bg2); border: 1px solid var(--border); color: var(--fg1);
+  border-radius: 3px; padding: 1px 5px; font-size: 11px; cursor: pointer;
+  height: 22px; outline: none; appearance: none;
+  padding-right: 16px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%237a8799'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 5px center;
+}
+.tb-label { font-size: 11px; color: var(--fg3); padding: 0 4px; user-select: none; }
+
+/* editor body */
+.editor-body {
+  flex: 1; overflow: auto; padding: 12px 16px;
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px; line-height: 1.75; color: var(--fg1);
+}
+.line { display: flex; gap: 12px; border-radius: 2px; }
+.ln { color: var(--fg3); min-width: 24px; text-align: right; user-select: none; flex-shrink: 0; font-size: 11.5px; opacity: 0.5; }
+.code { white-space: pre; }
+.kw   { color: var(--frost2); }
+.arg  { color: var(--green); }
+.cm   { color: var(--fg3); font-style: italic; opacity: 0.7; }
+.str  { color: var(--yellow); }
+.hl   { background: var(--sel); border-left: 2px solid var(--frost1); padding-left: 4px; }
+.cursor-line { background: var(--cursor-line); }
+
+/* ═══════════════════════════════════════════════════
+   PDF PANEL
+═══════════════════════════════════════════════════ */
+.pdf-panel {
+  width: 440px; flex-shrink: 0;
+  background: var(--bg1); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden;
+  transition: background 0.2s;
+}
+.pdf-toolbar {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 8px; border-bottom: 1px solid var(--border);
+  background: var(--bg1); flex-shrink: 0; height: 38px;
+}
+.compile-group { display: flex; border-radius: 4px; overflow: hidden; }
+.compile-btn {
+  background: var(--green); color: var(--green-fg); border: none;
+  padding: 0 13px; height: 26px; font-weight: 700;
+  cursor: pointer; font-size: 12px; display: flex; align-items: center; gap: 4px;
+  transition: filter 0.1s; white-space: nowrap;
+}
+.compile-btn:hover { filter: brightness(1.08); }
+.compile-caret {
+  background: var(--green); color: var(--green-fg); border: none;
+  border-left: 1px solid rgba(0,0,0,0.18); width: 22px; height: 26px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 8px; transition: filter 0.1s;
+}
+.compile-caret:hover { filter: brightness(1.08); }
+.pdf-status { font-size: 11px; color: var(--fg3); display: flex; align-items: center; gap: 4px; margin-left: 2px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.pdf-sep { flex: 1; }
+.pdf-icon-btn {
+  width: 24px; height: 24px; display: flex; align-items: center;
+  justify-content: center; border-radius: 3px; cursor: pointer;
+  color: var(--fg3); border: none; background: transparent; font-size: 12px;
+  transition: background 0.1s;
+}
+.pdf-icon-btn:hover { background: var(--bg2); color: var(--fg0); }
+.pdf-page-info { font-size: 11px; color: var(--fg3); white-space: nowrap; padding: 0 2px; }
+
+.pdf-body {
+  flex: 1; overflow: auto; display: flex; justify-content: center;
+  padding: 16px; background: var(--pdf-bg); transition: background 0.2s;
+}
+.pdf-page {
+  width: 100%; max-width: 360px; background: #fff;
+  border-radius: 2px; box-shadow: var(--shadow);
+  padding: 28px 32px; color: #111; align-self: flex-start;
+  transition: box-shadow 0.2s;
+}
+.pdf-page h1 { font-size: 14.5px; text-align: center; margin-bottom: 2px; }
+.pdf-sub { font-size: 9px; text-align: center; color: #555; margin-bottom: 8px; }
+.pdf-page h2 { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; margin: 9px 0 3px; border-bottom: 1px solid #bbb; padding-bottom: 2px; }
+.pdf-page p  { font-size: 9px; line-height: 1.5; color: #222; margin-bottom: 2px; }
+.pdf-rule { border: none; border-top: 1px solid #ddd; margin: 5px 0; }
+
+/* ═══════════════════════════════════════════════════
+   STATUS BAR
+═══════════════════════════════════════════════════ */
+.statusbar {
+  height: 20px; background: var(--statusbar-bg);
+  display: flex; align-items: center;
+  padding: 0 10px; gap: 12px; flex-shrink: 0;
+}
+.statusbar span { font-size: 11px; color: rgba(236,239,244,0.82); white-space: nowrap; }
+.statusbar .sb-sep { flex: 1; }
+.sb-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); margin-right: 4px; vertical-align: middle; }
+
+/* ═══════════════════════════════════════════════════
+   MISC UTILS
+═══════════════════════════════════════════════════ */
+.pill {
+  font-size: 10px; padding: 1px 6px; border-radius: 10px;
+  background: var(--bg2); color: var(--fg3); white-space: nowrap;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ MENU BAR ══════════════════════════════════════ -->
+<div class="menubar">
+  <div class="menubar-logo">Te<span>X</span>lyre</div>
+  <div class="menu-item">File</div>
+  <div class="menu-item">Edit</div>
+  <div class="menu-item">Insert</div>
+  <div class="menu-item">View</div>
+  <div class="menu-item">Format</div>
+  <div class="menu-item">Help</div>
+  <div class="menubar-sep"></div>
+  <div class="project-name-wrap">
+    <span class="project-name">resume_mechatronics</span>
+    <span class="edit-icon">✎</span>
+  </div>
+  <div class="menubar-sep"></div>
+  <div class="header-right">
+    <div class="avatars-wrap">
+      <div class="avatar green">PL</div>
+      <div class="avatar">SL</div>
+    </div>
+    <button class="share-btn">⬆ Share</button>
+    <button class="icon-btn" title="Backup">💾</button>
+    <button class="icon-btn" title="Settings">⚙</button>
+    <button class="theme-toggle" id="themeToggle" title="Toggle light/dark">🌙</button>
+  </div>
+</div>
+
+<!-- ══ WORKSPACE ═════════════════════════════════════ -->
+<div class="workspace">
+
+  <!-- ── SIDEBAR ──────────────────────────────────── -->
+  <div class="sidebar">
+
+    <div class="sidebar-tabs">
+      <div class="sidebar-tab active">Files</div>
+      <div class="sidebar-tab">Outline</div>
+      <div class="sidebar-tab">History</div>
+    </div>
+
+    <div class="sidebar-explorer-header">
+      <span class="sidebar-section-label">Project</span>
+      <div class="sb-actions">
+        <button class="sb-btn" title="New File">📄</button>
+        <button class="sb-btn" title="New Folder">📁</button>
+        <button class="sb-btn" title="Upload Files">⬆</button>
+        <button class="sb-btn" title="Collapse All">⊟</button>
+      </div>
+    </div>
+
+    <div class="file-tree">
+
+      <!-- root folder open -->
+      <div class="tree-folder">
+        <span class="folder-chevron">▾</span>
+        <span class="folder-icon-glyph">📂</span>
+        <span class="folder-label">resume_mechatronics</span>
+        <span class="row-menu">···</span>
+        <div class="ctx-menu">
+          <div class="ctx-item"><span class="ci">📄</span> New File</div>
+          <div class="ctx-item"><span class="ci">📁</span> New Folder</div>
+          <div class="ctx-item"><span class="ci">⬆</span> Upload</div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+          <div class="ctx-item"><span class="ci">📦</span> Export as ZIP</div>
+          <div class="ctx-sep"></div>
+          <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+        </div>
+      </div>
+
+      <!-- files inside root -->
+      <div class="tree-children">
+
+        <div class="tree-file active">
+          <span class="file-glyph">📄</span>
+          <span class="file-label">resume_mechatronics.tex</span>
+          <span class="row-menu">···</span>
+          <div class="ctx-menu">
+            <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+            <div class="ctx-item"><span class="ci">📋</span> Duplicate</div>
+            <div class="ctx-item"><span class="ci">✂</span> Move to…</div>
+            <div class="ctx-item"><span class="ci">🔗</span> Copy Path</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item"><span class="ci">⬇</span> Download</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+          </div>
+        </div>
+
+        <div class="tree-file">
+          <span class="file-glyph">📄</span>
+          <span class="file-label">references.bib</span>
+          <span class="row-menu">···</span>
+          <div class="ctx-menu">
+            <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+            <div class="ctx-item"><span class="ci">📋</span> Duplicate</div>
+            <div class="ctx-item"><span class="ci">✂</span> Move to…</div>
+            <div class="ctx-item"><span class="ci">🔗</span> Copy Path</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item"><span class="ci">⬇</span> Download</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+          </div>
+        </div>
+
+        <div class="tree-file">
+          <span class="file-glyph">📄</span>
+          <span class="file-label">cover_letter.tex</span>
+          <span class="row-menu">···</span>
+          <div class="ctx-menu">
+            <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+            <div class="ctx-item"><span class="ci">📋</span> Duplicate</div>
+            <div class="ctx-item"><span class="ci">✂</span> Move to…</div>
+            <div class="ctx-item"><span class="ci">🔗</span> Copy Path</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item"><span class="ci">⬇</span> Download</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+          </div>
+        </div>
+
+        <!-- subfolder collapsed -->
+        <div class="tree-folder" style="padding-left:4px;">
+          <span class="folder-chevron">▸</span>
+          <span class="folder-icon-glyph">📁</span>
+          <span class="folder-label">assets</span>
+          <span class="row-menu">···</span>
+          <div class="ctx-menu">
+            <div class="ctx-item"><span class="ci">📄</span> New File</div>
+            <div class="ctx-item"><span class="ci">📁</span> New Folder</div>
+            <div class="ctx-item"><span class="ci">⬆</span> Upload</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+            <div class="ctx-item"><span class="ci">📦</span> Export as ZIP</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+          </div>
+        </div>
+
+        <!-- subfolder open -->
+        <div class="tree-folder" style="padding-left:4px;">
+          <span class="folder-chevron">▾</span>
+          <span class="folder-icon-glyph">📂</span>
+          <span class="folder-label">sections</span>
+          <span class="row-menu">···</span>
+          <div class="ctx-menu">
+            <div class="ctx-item"><span class="ci">📄</span> New File</div>
+            <div class="ctx-item"><span class="ci">📁</span> New Folder</div>
+            <div class="ctx-item"><span class="ci">⬆</span> Upload</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+            <div class="ctx-item"><span class="ci">📦</span> Export as ZIP</div>
+            <div class="ctx-sep"></div>
+            <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+          </div>
+        </div>
+        <div class="tree-children">
+          <div class="tree-file">
+            <span class="file-glyph">📄</span>
+            <span class="file-label">education.tex</span>
+            <span class="row-menu">···</span>
+            <div class="ctx-menu">
+              <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+              <div class="ctx-item"><span class="ci">📋</span> Duplicate</div>
+              <div class="ctx-item"><span class="ci">✂</span> Move to…</div>
+              <div class="ctx-sep"></div>
+              <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+            </div>
+          </div>
+          <div class="tree-file">
+            <span class="file-glyph">📄</span>
+            <span class="file-label">experience.tex</span>
+            <span class="row-menu">···</span>
+            <div class="ctx-menu">
+              <div class="ctx-item"><span class="ci">✏</span> Rename</div>
+              <div class="ctx-item"><span class="ci">📋</span> Duplicate</div>
+              <div class="ctx-item"><span class="ci">✂</span> Move to…</div>
+              <div class="ctx-sep"></div>
+              <div class="ctx-item danger"><span class="ci">🗑</span> Delete</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tree-children -->
+    </div><!-- /file-tree -->
+  </div><!-- /sidebar -->
+
+  <!-- ── EDITOR PANEL ──────────────────────────────── -->
+  <div class="editor-panel">
+
+    <div class="editor-tabs">
+      <div class="editor-tab active">
+        <span class="tab-dot"></span>
+        resume_mechatronics.tex
+        <span class="tab-close">✕</span>
+      </div>
+      <div class="editor-tab">
+        references.bib
+        <span class="tab-close">✕</span>
+      </div>
+    </div>
+
+    <div class="editor-toolbar">
+      <select class="tb-select" style="width:108px;">
+        <option>Normal text</option>
+        <option>Section</option>
+        <option>Subsection</option>
+        <option>Subsubsection</option>
+      </select>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="Bold"><b>B</b></button>
+      <button class="tb-btn" title="Italic"><i>I</i></button>
+      <button class="tb-btn" title="Underline"><u>U</u></button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="Inline math" style="font-size:11px;">$x$</button>
+      <button class="tb-btn" title="Display math">∑</button>
+      <button class="tb-btn" title="Greek / symbols">Ω</button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="Bullet list">≡</button>
+      <button class="tb-btn" title="Numbered list" style="font-size:11px;">1.</button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="Insert link">🔗</button>
+      <button class="tb-btn" title="Insert figure">🖼</button>
+      <button class="tb-btn" title="Insert table">⊞</button>
+      <div class="tb-sep"></div>
+      <button class="tb-btn" title="Find &amp; Replace">⌕</button>
+      <span class="tb-label">Ln 10  Col 38</span>
+    </div>
+
+    <div class="editor-body">
+      <div class="line"><span class="ln">1</span><span class="code"><span class="kw">\documentclass</span>[a4paper,9pt]{<span class="arg">article</span>}</span></div>
+      <div class="line"><span class="ln">2</span><span class="code"><span class="kw">\usepackage</span>{<span class="arg">float</span>}</span></div>
+      <div class="line"><span class="ln">3</span><span class="code"><span class="kw">\usepackage</span>{<span class="arg">graphicx</span>}</span></div>
+      <div class="line"><span class="ln">4</span><span class="code"><span class="kw">\usepackage</span>{<span class="arg">latexsym</span>}</span></div>
+      <div class="line"><span class="ln">5</span><span class="code"><span class="kw">\usepackage</span>[<span class="arg">utf8</span>]{inputenc}</span></div>
+      <div class="line"><span class="ln">6</span><span class="code"><span class="kw">\usepackage</span>[<span class="arg">empty</span>]{fullpage}</span></div>
+      <div class="line"><span class="ln">7</span><span class="code"><span class="kw">\usepackage</span>{<span class="arg">titlesec</span>}</span></div>
+      <div class="line"><span class="ln">8</span><span class="code"> </span></div>
+      <div class="line"><span class="ln">9</span><span class="code cm">% Adjust margins</span></div>
+      <div class="line cursor-line"><span class="ln">10</span><span class="code hl"><span class="kw">\addtolength</span>{\oddsidemargin}{<span class="arg">-0.530in</span>}</span></div>
+      <div class="line"><span class="ln">11</span><span class="code"><span class="kw">\addtolength</span>{\evensidemargin}{<span class="arg">-0.375in</span>}</span></div>
+      <div class="line"><span class="ln">12</span><span class="code"><span class="kw">\addtolength</span>{\textwidth}{<span class="arg">1in</span>}</span></div>
+      <div class="line"><span class="ln">13</span><span class="code"> </span></div>
+      <div class="line"><span class="ln">14</span><span class="code"><span class="kw">\urlstyle</span>{rm}</span></div>
+      <div class="line"><span class="ln">15</span><span class="code"> </span></div>
+      <div class="line"><span class="ln">16</span><span class="code"><span class="kw">\raggedbottom</span></span></div>
+      <div class="line"><span class="ln">17</span><span class="code"><span class="kw">\raggedright</span></span></div>
+      <div class="line"><span class="ln">18</span><span class="code"> </span></div>
+      <div class="line"><span class="ln">19</span><span class="code cm">% Section formatting</span></div>
+      <div class="line"><span class="ln">20</span><span class="code"><span class="kw">\titleformat</span>{\section}{</span></div>
+      <div class="line"><span class="ln">21</span><span class="code">  <span class="kw">\vspace</span>{<span class="arg">-10pt</span>}<span class="kw">\scshape\raggedright\large</span></span></div>
+      <div class="line"><span class="ln">22</span><span class="code">}{}{0em}{}</span></div>
+      <div class="line"><span class="ln">23</span><span class="code"> </span></div>
+      <div class="line"><span class="ln">24</span><span class="code cm">% Custom commands</span></div>
+      <div class="line"><span class="ln">25</span><span class="code"><span class="kw">\newcommand</span>{\resumeItem}[2]{</span></div>
+      <div class="line"><span class="ln">26</span><span class="code">  <span class="kw">\item\small</span>{</span></div>
+      <div class="line"><span class="ln">27</span><span class="code">    <span class="kw">\textbf</span>{<span class="arg">#1</span>}{<span class="arg">#2</span> <span class="kw">\vspace</span>{.2pt}}</span></div>
+      <div class="line"><span class="ln">28</span><span class="code">  }</span></div>
+      <div class="line"><span class="ln">29</span><span class="code">}</span></div>
+    </div>
+  </div>
+
+  <!-- ── PDF PANEL ─────────────────────────────────── -->
+  <div class="pdf-panel">
+    <div class="pdf-toolbar">
+      <div class="compile-group">
+        <button class="compile-btn">▶ Recompile</button>
+        <button class="compile-caret">▾</button>
+      </div>
+      <div class="pdf-status">
+        <span class="status-dot"></span>
+        Compiled
+      </div>
+      <div class="pdf-sep"></div>
+      <button class="pdf-icon-btn" title="Toggle dark page">◑</button>
+      <button class="pdf-icon-btn" title="Prev page">∧</button>
+      <span class="pdf-page-info">1 / 1</span>
+      <button class="pdf-icon-btn" title="Next page">∨</button>
+      <div class="tb-sep"></div>
+      <button class="pdf-icon-btn">−</button>
+      <span class="pdf-page-info">78%</span>
+      <button class="pdf-icon-btn">+</button>
+      <div class="tb-sep"></div>
+      <button class="pdf-icon-btn" title="Pop out">⬡</button>
+      <button class="pdf-icon-btn" title="Download PDF">⬇</button>
+    </div>
+
+    <div class="pdf-body">
+      <div class="pdf-page">
+        <h1>Steve (Guanrui) Lu</h1>
+        <p class="pdf-sub">Diamond Bar, CA &nbsp;|&nbsp; stevelu35@gmail.com &nbsp;|&nbsp; linkedin.com/in/steveguanruilu</p>
+        <hr class="pdf-rule" />
+        <h2>Education</h2>
+        <p><b>University of Southern California</b> &mdash; Los Angeles, CA<br/>
+        B.S. Mathematics; B.S. Electrical &amp; Computer Engineering &middot; Aug 2025&ndash;May 2029</p>
+        <h2>Experience</h2>
+        <p><b>Terralabs (USC)</b> &mdash; Robotics Controls &amp; Autonomy Engineer &middot; Jan 2026&ndash;Present<br/>
+        &bull; Adapted 7-DOF inverse kinematics for NASA-inspired robotic arm<br/>
+        &bull; Designed CAN bus architecture for real-time motor control across 7 servos</p>
+        <p><b>Roboland (USC)</b> &mdash; Undergraduate Researcher &middot; Aug 2025&ndash;Present<br/>
+        &bull; Designed electromechanical docking mechanism for robot swarms<br/>
+        &bull; Implemented embedded control algorithms on Arduino via UART</p>
+        <h2>Technical Projects</h2>
+        <p><b>VEX Robotics Competition Robot</b> &mdash; C++, PID, Odometry &middot; 2021&ndash;2024<br/>
+        &bull; Led 5-person team to VEX Worlds across 4 seasons</p>
+        <p><b>MacBook Pro Internal NVMe Adapter</b> &mdash; KiCad, PCB Design &middot; 2025<br/>
+        &bull; Designed 4-layer PCB with USB 3.2 hub controller, 5Gbps signal integrity</p>
+        <h2>Technical Skills</h2>
+        <p>Controls &amp; Robotics: Inverse Kinematics, PID, Motion Planning<br/>
+        Programming: C++/C, Python, Assembly &nbsp;&bull;&nbsp; CAD: SolidWorks, Fusion 360<br/>
+        Hardware: PCB Design, Signal Integrity, Power Systems</p>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /workspace -->
+
+<!-- ══ STATUS BAR ════════════════════════════════════ -->
+<div class="statusbar">
+  <span><span class="sb-dot"></span>Connected</span>
+  <span>LaTeX &middot; pdfTeX</span>
+  <span class="sb-sep"></span>
+  <span>Ln 10, Col 38</span>
+  <span>UTF-8</span>
+  <span>TeXlyre v0.6.5</span>
+</div>
+
+<script>
+  // ── Context menu toggle ──────────────────────────
+  document.querySelectorAll('.row-menu').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const row = btn.parentElement;
+      const isOpen = row.classList.contains('show-ctx');
+      document.querySelectorAll('.show-ctx').forEach(el => el.classList.remove('show-ctx'));
+      if (!isOpen) row.classList.add('show-ctx');
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.show-ctx').forEach(el => el.classList.remove('show-ctx'));
+  });
+
+  // ── Light / dark toggle ──────────────────────────
+  const html = document.documentElement;
+  const toggle = document.getElementById('themeToggle');
+  toggle.addEventListener('click', () => {
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    toggle.textContent = isDark ? '🌙' : '☀️';
+  });
+</script>
+</body>
+</html>

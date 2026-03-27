@@ -5,7 +5,7 @@
   flex-shrink: 0;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .editor-tabs {
@@ -15,8 +15,8 @@
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  min-height: 36px;
-  max-height: 36px;
+  min-height: 34px;
+  max-height: 34px;
   scroll-behavior: smooth;
   flex: 1;
 }
@@ -121,34 +121,36 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  background: var(--pico-background);
-  border: 1px solid var(--accent-border);
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid transparent;
   border-bottom: none;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-radius: 4px 4px 0 0;
   cursor: pointer;
   user-select: none;
   position: relative;
   min-width: 120px;
   max-width: 200px;
-  transition: all var(--transition-normal) ease;
-  margin-right: -1px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  margin-right: 1px;
   font-size: 0.8rem;
   height: 32px;
   box-sizing: border-box;
-  color: var(--text-color);
+  color: var(--pico-secondary);
   flex-shrink: 0;
   scroll-snap-align: start;
 }
 
-.editor-tab:hover {
-  background: var(--pico-primary-focus);
+.editor-tab:hover:not(.active) {
+  background: var(--hover-background);
+  color: var(--text-color);
 }
 
 .editor-tab.active {
   background: var(--pico-background);
-  border-color: var(--pico-primary);
-  border-bottom: 1px solid var(--pico-background);
+  color: var(--text-color);
+  border-color: var(--accent-border);
+  border-bottom-color: var(--pico-background);
   z-index: 1;
   margin-bottom: -1px;
   font-weight: 500;

@@ -41,7 +41,7 @@ const config: TexlyreConfig = {
         bibliography: ['zotero', 'openalex'], // 'jabref'
         lsp: [],
         backup: ['github', 'gitlab', 'forgejo', 'gitea', 'google-drive'],
-        themes: ['texlyre_slim', 'texlyre_wide', 'texlyre_mobile', 'modern'],
+        themes: [],
     },
 
     // overwrite priority is default < local < mobile for corresponding configs

@@ -238,6 +238,10 @@ async function startApp() {
 	);
 }
 
+// Apply Nord theme from localStorage before React renders (avoids flash)
+const savedTheme = localStorage.getItem('texlyre-theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+
 setupDirection();
 setupGuestCleanup();
 startApp();

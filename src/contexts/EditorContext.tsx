@@ -54,7 +54,7 @@ export const defaultEditorSettings: EditorSettings = {
   syntaxHighlighting: true,
   autoSaveEnabled: false,
   autoSaveDelay: 150,
-  highlightTheme: 'auto' as HighlightTheme,
+  highlightTheme: 'nord' as HighlightTheme,
   vimMode: false,
   spellCheck: true,
   mathLiveEnabled: true,

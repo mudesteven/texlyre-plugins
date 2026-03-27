@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "settings": {
     "bibtex-viewer-auto-tidy": false,
     "bibtex-viewer-tidy-options": "standard",
@@ -42,8 +42,8 @@
     "pdf-viewer-rendering-quality": "high",
     "repository-proxy-url": "https://proxy.texlyre.org/?url=",
     "templates-api-url": "https://texlyre.github.io/texlyre-templates/api/templates.json",
-    "theme-plugin": "texlyre-wide-theme",
-    "theme-variant": "atom_light",
+    "theme-plugin": "modern-theme",
+    "theme-variant": "modern-nord",
     "typst-auto-compile-on-open": false
   },
   "properties": {

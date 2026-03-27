@@ -80,17 +80,9 @@
 }
 
 @keyframes logo-subtle-pulse {
-	0% {
-		filter: brightness(1);
-	}
-
-	50% {
-		filter: brightness(1.1) drop-shadow(0 0 10px rgba(120, 64, 255, 0.5));
-	}
-
-	100% {
-		filter: brightness(1);
-	}
+	0%   { opacity: 0.9; }
+	50%  { opacity: 1; }
+	100% { opacity: 0.9; }
 }
 
 .auth-logo-wrapper:hover::before,
@@ -101,7 +93,7 @@
 
 .auth-logo-wrapper:hover .auth-logo {
 	animation-play-state: paused;
-	filter: brightness(1.1) drop-shadow(0 0 10px rgba(120, 64, 255, 0.5));
+	opacity: 1;
 }
 
 .auth-header {
@@ -283,16 +275,12 @@
 }
 
 .user-dropdown-menu {
-	position: absolute;
-	top: 100%;
-	right: 0;
-	margin-top: var(--space-xs);
 	min-width: var(--dropdown-width);
 	background-color: var(--pico-background);
 	border: 1px solid var(--accent-border);
 	border-radius: var(--radius-sm);
 	box-shadow: var(--shadow-md);
-	z-index: var(--z-dropdown);
+	z-index: var(--z-popup);
 	overflow: hidden;
 }
 
