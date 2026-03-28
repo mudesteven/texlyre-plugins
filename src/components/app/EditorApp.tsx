@@ -24,6 +24,7 @@ import type { DocumentList } from '../../types/documents';
 import type { YjsDocUrl } from '../../types/yjs';
 import BackupModal from '../backup/BackupModal';
 import BackupStatusIndicator from '../backup/BackupStatusIndicator';
+import GoogleDriveIndicator from '../common/GoogleDriveIndicator';
 import ChatPanel from '../chat/ChatPanel';
 import CollabStatusIndicator from '../collab/CollabStatusIndicator';
 import { ChevronLeftIcon, EditIcon } from '../common/Icons';
@@ -566,10 +567,13 @@ const EditorAppView: React.FC<EditorAppProps> = ({
             onOpenShareModal={() => setShowShareModal(true)} />
 
           {!isGuestUser(user) &&
-            <BackupStatusIndicator
-              className="header-backup-indicator"
-              currentProjectId={sessionStorage.getItem('currentProjectId')}
-              isInEditor={true} />
+            <>
+              <BackupStatusIndicator
+                className="header-backup-indicator"
+                currentProjectId={sessionStorage.getItem('currentProjectId')}
+                isInEditor={true} />
+              <GoogleDriveIndicator className="header-drive-indicator" onOpenProfile={() => setShowProfileModal(true)} />
+            </>
           }
           {!isOfflineMode &&
             <CollabStatusIndicator
@@ -590,7 +594,8 @@ const EditorAppView: React.FC<EditorAppProps> = ({
             onOpenExport={() => setShowAccountExportModal(true)}
             onOpenDeleteAccount={() => setIsDeleteAccountModalOpen(true)}
             onOpenUpgrade={() => setShowGuestUpgradeModal(true)}
-            isGuest={isGuestUser(user)} />
+            isGuest={isGuestUser(user)}
+            googlePicture={user?.googlePicture} />
         </div>
       </nav>
 

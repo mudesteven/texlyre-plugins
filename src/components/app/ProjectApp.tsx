@@ -12,6 +12,7 @@ import { isValidYjsUrl, buildUrlWithFragments, parseUrlFragments } from '../../u
 import BackupDiscoveryModal from '../backup/BackupDiscoveryModal';
 import BackupModal from '../backup/BackupModal';
 import BackupStatusIndicator from '../backup/BackupStatusIndicator';
+import GoogleDriveIndicator from '../common/GoogleDriveIndicator';
 import Modal from '../common/Modal';
 import ResizablePanel from '../common/ResizablePanel';
 import ExportAccountModal from '../profile/ExportAccountModal';
@@ -427,7 +428,10 @@ const ProjectApp: React.FC<ProjectManagerProps> = ({
 
         <div className="header-right">
           {!isGuestUser(user) &&
-            <BackupStatusIndicator className="header-backup-indicator" />
+            <>
+              <BackupStatusIndicator className="header-backup-indicator" />
+              <GoogleDriveIndicator className="header-drive-indicator" onOpenProfile={() => setShowProfileModal(true)} />
+            </>
           }
           <SettingsButton className="header-settings-button" />
           <UserDropdown
@@ -437,7 +441,8 @@ const ProjectApp: React.FC<ProjectManagerProps> = ({
             onOpenExport={() => setShowAccountExportModal(true)}
             onOpenDeleteAccount={() => setIsDeleteAccountModalOpen(true)}
             onOpenUpgrade={() => setShowGuestUpgradeModal(true)}
-            isGuest={isGuestUser(user)} />
+            isGuest={isGuestUser(user)}
+            googlePicture={user?.googlePicture} />
 
         </div>
       </header>

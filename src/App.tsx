@@ -57,6 +57,7 @@ import AppRouter from './components/app/AppRouter';
 import PasswordModal from './components/auth/PasswordModal';
 import SplashScreen from './components/common/SplashScreen';
 import FileConflictModal from './components/editor/FileConflictModal';
+import GoogleReauthBanner from './components/common/GoogleReauthBanner';
 import { AuthProvider } from './contexts/AuthContext';
 import { EditorProvider } from './contexts/EditorContext';
 import { LSPConfigProvider } from './contexts/LSPConfigContext';
@@ -153,6 +154,7 @@ function AppContent() {
 
 	return (
 		<>
+			<GoogleReauthBanner />
 			<AppRouter />
 			<FileConflictModal />
 			<PasswordModal

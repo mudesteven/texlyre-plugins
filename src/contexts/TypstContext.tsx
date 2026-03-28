@@ -13,10 +13,17 @@ import {
 
 import { useFileTree } from '../hooks/useFileTree';
 import { useSettings } from '../hooks/useSettings';
+import { useAuth } from '../hooks/useAuth';
 import type { TypstContextType, TypstOutputFormat, TypstPdfOptions } from '../types/typst';
 import { typstService } from '../services/TypstService';
 import { pdfWindowService } from '../services/PdfWindowService';
+import { googleDriveService } from '../services/GoogleDriveService';
 import { parseUrlFragments } from '../utils/urlUtils';
+
+function getProjectIdFromUrl(): string | null {
+  const match = window.location.hash.match(/yjs:([^&]+)/);
+  return match?.[1] ?? null;
+}
 
 export const TypstContext = createContext<TypstContextType | null>(null);
 
@@ -27,6 +34,7 @@ interface TypstProviderProps {
 export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
   const { fileTree, refreshFileTree } = useFileTree();
   const { registerSetting, getSetting } = useSettings();
+  const { user, googleStatus } = useAuth();
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [hasAutoCompiled, setHasAutoCompiled] = useState(false);
   const [compileError, setCompileError] = useState<string | null>(null);
@@ -108,6 +116,16 @@ export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
     });
 
     typstService.setDefaultFormat(initialDefaultFormat);
+
+    registerSetting({
+      id: 'google-drive-auto-sync-on-compile',
+      category: 'Google',
+      subcategory: 'Drive Sync',
+      type: 'checkbox',
+      label: 'Upload PDF to Drive after compile',
+      description: 'Automatically upload the compiled PDF to Google Drive after each successful compilation.',
+      defaultValue: true,
+    });
   }, [registerSetting, getSetting]);
 
   useEffect(() => {
@@ -177,6 +195,16 @@ export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
                 fileName,
                 projectName
               );
+
+              // Auto-upload to Google Drive if connected and setting enabled
+              if (googleStatus === 'connected' && user &&
+                  getSetting('google-drive-auto-sync-on-compile')?.value !== false) {
+                const projectId = getProjectIdFromUrl();
+                if (projectId) {
+                  googleDriveService.uploadPdf(user.id, projectId, result.pdf, fileName)
+                    .catch(err => console.warn('[TypstContext] Drive PDF upload failed:', err));
+                }
+              }
             }
             break;
           case 'svg':

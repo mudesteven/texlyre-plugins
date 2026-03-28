@@ -33,6 +33,7 @@ class AutoSaveManager {
 				const dataToSave = encoder.encode(contentToSave).buffer;
 
 				await fileStorageService.updateFileContent(fileId, dataToSave);
+				window.dispatchEvent(new CustomEvent('texlyre:file-saved', { detail: { fileId, content: contentToSave } }));
 				await options.onSave?.(fileId, contentToSave);
 			} catch (error) {
 				options.onError?.(error as Error);

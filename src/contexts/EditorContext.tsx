@@ -12,6 +12,7 @@ import {
 
 import { pluginRegistry } from '../plugins/PluginRegistry';
 import { useSettings } from '../hooks/useSettings';
+import { useDriveAutoSync } from '../hooks/useDriveAutoSync';
 import type {
   EditorSettings,
   FontFamily,
@@ -305,6 +306,7 @@ interface EditorProviderProps {
 
 export const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
   const { getSetting, batchGetSettings, registerSetting } = useSettings();
+  useDriveAutoSync();
   const [editorSettings, setEditorSettings] =
     useState<EditorSettings>(defaultEditorSettings);
   const [editorSettingsVersion, setEditorSettingsVersion] = useState(0);

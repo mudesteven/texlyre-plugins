@@ -761,3 +761,180 @@
 .modal-overlay:has(.clear-storage-modal) {
 	z-index: calc(var(--z-above-all)) !important;
 }
+/* ── Google Sign-In button ───────────────────────────── */
+.google-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-sm);
+	background-color: var(--pico-secondary-background) !important;
+	border: 1px solid var(--accent-border) !important;
+	color: var(--text-color) !important;
+	font-weight: 500;
+}
+
+.google-button:hover:not(:disabled) {
+	background-color: var(--hover-background) !important;
+	border-color: var(--pico-primary) !important;
+}
+
+.google-icon {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+/* ── Google Account section (ProfileSettingsModal) ───── */
+.google-account-section {
+	border: 1px solid var(--accent-border);
+	border-radius: var(--radius-md);
+	padding: var(--space-md);
+	margin-bottom: var(--space-md);
+	background-color: var(--pico-background);
+}
+
+.google-account-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-md);
+	flex-wrap: wrap;
+}
+
+.google-account-desc {
+	margin: 0 0 var(--space-sm) 0;
+	color: var(--pico-secondary);
+	font-size: 0.85rem;
+	flex: 1;
+}
+
+.google-account-info {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+}
+
+.google-avatar {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.google-link-button {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	white-space: nowrap;
+}
+
+.google-reauth-badge {
+	display: inline-block;
+	margin-left: var(--space-xs);
+	padding: 1px 6px;
+	background-color: rgba(255, 193, 7, 0.15);
+	border: 1px solid rgba(255, 193, 7, 0.4);
+	border-radius: 10px;
+	font-size: 0.7rem;
+	color: var(--color-warning);
+}
+
+/* ── User dropdown Google avatar ─────────────────────── */
+.user-dropdown-avatar {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	flex-shrink: 0;
+	object-fit: cover;
+}
+
+/* ── Google Drive toolbar indicator ─────────────────── */
+.google-drive-indicator {
+	display: flex;
+	align-items: center;
+	gap: 3px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px 6px;
+	border-radius: var(--radius-sm);
+	color: var(--pico-secondary);
+	transition: background-color var(--transition-fast);
+	position: relative;
+}
+
+.google-drive-indicator:hover {
+	background-color: var(--hover-background);
+}
+
+.drive-icon {
+	flex-shrink: 0;
+	opacity: 0.85;
+}
+
+.drive-status-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	position: absolute;
+	bottom: 4px;
+	right: 4px;
+	border: 1px solid var(--pico-secondary-background);
+}
+
+/* ── Google Reauth Banner ────────────────────────────── */
+.google-reauth-banner {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	padding: 6px var(--space-md);
+	background-color: rgba(255, 193, 7, 0.12);
+	border-bottom: 1px solid rgba(255, 193, 7, 0.35);
+	font-size: 0.85rem;
+	color: var(--text-color);
+	z-index: var(--z-sticky);
+	flex-shrink: 0;
+}
+
+.reauth-banner-text {
+	flex: 1;
+	color: var(--color-warning);
+}
+
+.reauth-banner-btn {
+	background-color: var(--color-warning);
+	color: #000;
+	border: none;
+	border-radius: var(--radius-sm);
+	padding: 3px 10px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: opacity var(--transition-fast);
+	white-space: nowrap;
+}
+
+.reauth-banner-btn:hover:not(:disabled) {
+	opacity: 0.85;
+}
+
+.reauth-banner-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.reauth-banner-dismiss {
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: var(--pico-secondary);
+	font-size: 0.9rem;
+	padding: 2px 6px;
+	border-radius: var(--radius-sm);
+	line-height: 1;
+	transition: color var(--transition-fast);
+}
+
+.reauth-banner-dismiss:hover {
+	color: var(--text-color);
+}

@@ -4,7 +4,7 @@ import { type IDBPDatabase, openDB } from 'idb';
 import { IndexeddbPersistence } from 'y-indexeddb';
 import * as Y from 'yjs';
 
-import type { User } from '../types/auth';
+import type { DriveFileMapEntry, GoogleProfile, GoogleToken, User } from '../types/auth';
 import type { Project } from '../types/projects';
 import { cleanupProjectDatabases } from '../utils/dbDeleteUtils';
 import { fileSystemBackupService } from './FileSystemBackupService';
@@ -18,13 +18,15 @@ class AuthService {
 	private readonly DB_NAME = 'texlyre-auth';
 	private readonly USER_STORE = 'users';
 	private readonly PROJECT_STORE = 'projects';
-	private readonly DB_VERSION = 1;
+	private readonly GOOGLE_TOKEN_STORE = 'google_tokens';
+	private readonly DRIVE_FILE_MAP_STORE = 'drive_file_map';
+	private readonly DB_VERSION = 2;
 	private currentUser: User | null = null;
 
 	async initialize(): Promise<void> {
 		try {
 			this.db = await openDB(this.DB_NAME, this.DB_VERSION, {
-				upgrade: (db, _oldVersion, _newVersion) => {
+				upgrade: (db, oldVersion, _newVersion, tx) => {
 					if (!db.objectStoreNames.contains(this.USER_STORE)) {
 						const userStore = db.createObjectStore(this.USER_STORE, {
 							keyPath: 'id',
@@ -32,6 +34,13 @@ class AuthService {
 						userStore.createIndex('username', 'username', { unique: false });
 						userStore.createIndex('email', 'email', { unique: false });
 						userStore.createIndex('sessionId', 'sessionId', { unique: false });
+						userStore.createIndex('googleId', 'googleId', { unique: false });
+					} else if (oldVersion < 2) {
+						// Add googleId index to existing users store (migration v1 → v2)
+						const userStore = tx.objectStore(this.USER_STORE);
+						if (!userStore.indexNames.contains('googleId')) {
+							userStore.createIndex('googleId', 'googleId', { unique: false });
+						}
 					}
 
 					if (!db.objectStoreNames.contains(this.PROJECT_STORE)) {
@@ -43,6 +52,17 @@ class AuthService {
 							unique: false,
 							multiEntry: true,
 						});
+					}
+
+					if (!db.objectStoreNames.contains(this.GOOGLE_TOKEN_STORE)) {
+						db.createObjectStore(this.GOOGLE_TOKEN_STORE, { keyPath: 'userId' });
+					}
+
+					if (!db.objectStoreNames.contains(this.DRIVE_FILE_MAP_STORE)) {
+						const driveStore = db.createObjectStore(this.DRIVE_FILE_MAP_STORE, {
+							keyPath: ['userId', 'projectId', 'path'],
+						});
+						driveStore.createIndex('projectId', ['userId', 'projectId'], { unique: false });
 					}
 				},
 			});
@@ -756,6 +776,181 @@ class AuthService {
 
 		await this.db?.put(this.PROJECT_STORE, updatedProject);
 		return updatedProject;
+	}
+
+	// ── Google Auth ──────────────────────────────────────────────────────────
+
+	async signInWithGoogle(profile: GoogleProfile, accessToken: string, idToken?: string): Promise<User> {
+		if (!this.db) await this.initialize();
+
+		// 1. Look up by googleId
+		let user = await this.db?.getFromIndex(this.USER_STORE, 'googleId', profile.sub) ?? null;
+
+		if (user) {
+			// Returning Google user — update profile fields and lastLogin
+			user = {
+				...user,
+				googleEmail: profile.email,
+				googlePicture: profile.picture,
+				lastLogin: Date.now(),
+			};
+			await this.db?.put(this.USER_STORE, user);
+		} else {
+			// Check for email match with existing local account
+			const byEmail = profile.email
+				? (await this.db?.getFromIndex(this.USER_STORE, 'email', profile.email) ?? null)
+				: null;
+
+			if (byEmail && !this.isGuestUser(byEmail)) {
+				// Link Google to existing local account
+				user = {
+					...byEmail,
+					googleId: profile.sub,
+					googleEmail: profile.email,
+					googlePicture: profile.picture,
+					googleLinkedAt: Date.now(),
+					lastLogin: Date.now(),
+				};
+				await this.db?.put(this.USER_STORE, user);
+			} else {
+				// Brand new Google user
+				const userId = crypto.randomUUID();
+				const now = Date.now();
+				user = {
+					id: userId,
+					username: profile.name,
+					name: profile.name,
+					passwordHash: '',
+					email: profile.email,
+					googleId: profile.sub,
+					googleEmail: profile.email,
+					googlePicture: profile.picture,
+					googleLinkedAt: now,
+					createdAt: now,
+					lastLogin: now,
+					color: this.generateRandomColor(false),
+					colorLight: this.generateRandomColor(true),
+				};
+				await this.db?.put(this.USER_STORE, user);
+			}
+		}
+
+		// Store token
+		const token: GoogleToken = {
+			userId: user.id,
+			accessToken,
+			expiresAt: Date.now() + 55 * 60 * 1000, // 55 min (tokens last 1h)
+			scopes: ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/drive.file'],
+			idToken,
+		};
+		await this.db?.put(this.GOOGLE_TOKEN_STORE, token);
+
+		this.currentUser = user;
+		localStorage.setItem('texlyre-current-user', user.id);
+
+		return user;
+	}
+
+	async linkGoogleAccount(userId: string, profile: GoogleProfile, accessToken: string, idToken?: string): Promise<User> {
+		if (!this.db) await this.initialize();
+
+		const user = await this.getUserById(userId);
+		if (!user) throw new Error(t('User not found'));
+
+		const updatedUser: User = {
+			...user,
+			googleId: profile.sub,
+			googleEmail: profile.email,
+			googlePicture: profile.picture,
+			googleLinkedAt: Date.now(),
+		};
+		await this.db?.put(this.USER_STORE, updatedUser);
+
+		const token: GoogleToken = {
+			userId,
+			accessToken,
+			expiresAt: Date.now() + 55 * 60 * 1000,
+			scopes: ['openid', 'email', 'profile', 'https://www.googleapis.com/auth/drive.file'],
+			idToken,
+		};
+		await this.db?.put(this.GOOGLE_TOKEN_STORE, token);
+
+		if (this.currentUser?.id === userId) {
+			this.currentUser = updatedUser;
+		}
+
+		return updatedUser;
+	}
+
+	async unlinkGoogleAccount(userId: string): Promise<User> {
+		if (!this.db) await this.initialize();
+
+		const user = await this.getUserById(userId);
+		if (!user) throw new Error(t('User not found'));
+		if (!user.passwordHash) {
+			throw new Error(t('Set a local password before disconnecting Google'));
+		}
+
+		const updatedUser: User = {
+			...user,
+			googleId: undefined,
+			googleEmail: undefined,
+			googlePicture: undefined,
+			googleLinkedAt: undefined,
+		};
+		await this.db?.put(this.USER_STORE, updatedUser);
+		await this.db?.delete(this.GOOGLE_TOKEN_STORE, userId);
+
+		if (this.currentUser?.id === userId) {
+			this.currentUser = updatedUser;
+		}
+
+		return updatedUser;
+	}
+
+	// ── Google Token helpers (used by GoogleAuthService) ─────────────────────
+
+	async getGoogleToken(userId: string): Promise<GoogleToken | null> {
+		if (!this.db) await this.initialize();
+		return this.db?.get(this.GOOGLE_TOKEN_STORE, userId) ?? null;
+	}
+
+	async storeGoogleToken(token: GoogleToken): Promise<void> {
+		if (!this.db) await this.initialize();
+		await this.db?.put(this.GOOGLE_TOKEN_STORE, token);
+	}
+
+	async deleteGoogleToken(userId: string): Promise<void> {
+		if (!this.db) await this.initialize();
+		await this.db?.delete(this.GOOGLE_TOKEN_STORE, userId);
+	}
+
+	// ── Drive file map helpers (used by GoogleDriveService) ──────────────────
+
+	async getDriveFileMapEntry(userId: string, projectId: string, path: string): Promise<DriveFileMapEntry | null> {
+		if (!this.db) await this.initialize();
+		return this.db?.get(this.DRIVE_FILE_MAP_STORE, [userId, projectId, path]) ?? null;
+	}
+
+	async putDriveFileMapEntry(entry: DriveFileMapEntry): Promise<void> {
+		if (!this.db) await this.initialize();
+		await this.db?.put(this.DRIVE_FILE_MAP_STORE, entry);
+	}
+
+	async getDriveFileMapForProject(userId: string, projectId: string): Promise<DriveFileMapEntry[]> {
+		if (!this.db) await this.initialize();
+		const tx = this.db?.transaction(this.DRIVE_FILE_MAP_STORE, 'readonly');
+		const index = tx.store.index('projectId');
+		return index.getAll([userId, projectId]);
+	}
+
+	async deleteDriveFileMapForProject(userId: string, projectId: string): Promise<void> {
+		if (!this.db) await this.initialize();
+		const entries = await this.getDriveFileMapForProject(userId, projectId);
+		const tx = this.db?.transaction(this.DRIVE_FILE_MAP_STORE, 'readwrite');
+		for (const entry of entries) {
+			await tx.store.delete([entry.userId, entry.projectId, entry.path]);
+		}
 	}
 }
 

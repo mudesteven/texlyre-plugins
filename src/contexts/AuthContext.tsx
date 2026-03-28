@@ -1,15 +1,18 @@
 // src/contexts/AuthContext.tsx
 import type React from 'react';
-import { type ReactNode, createContext, useEffect, useState } from 'react';
+import { type ReactNode, createContext, useCallback, useEffect, useState } from 'react';
 
 import { authService } from '../services/AuthService';
+import { googleAuthService } from '../services/GoogleAuthService';
 import type { AuthContextType, User } from '../types/auth';
 import type { Project } from '../types/projects';
+import { useSettings } from '../hooks/useSettings';
 
 export const AuthContext = createContext<AuthContextType>({
 	user: null,
 	isAuthenticated: false,
 	isInitializing: true,
+	googleStatus: 'disconnected',
 	login: async () => {
 		throw new Error('Not implemented');
 	},
@@ -49,7 +52,7 @@ export const AuthContext = createContext<AuthContextType>({
 	getProjectsByTag: async () => {
 		throw new Error('Not implemented');
 	},
-	getProjectsByType: async (type: 'latex' | 'typst') => {
+	getProjectsByType: async (_type: 'latex' | 'typst') => {
 		throw new Error('Not implemented');
 	},
 	searchProjects: async () => {
@@ -68,6 +71,10 @@ export const AuthContext = createContext<AuthContextType>({
 	cleanupExpiredGuests: async () => {
 		throw new Error('Not implemented');
 	},
+	signInWithGoogle: async () => ({ success: false }),
+	linkGoogle: async () => ({ success: false }),
+	unlinkGoogle: async () => ({ success: false }),
+	requestDriveAccess: async () => ({ success: false }),
 });
 
 interface AuthProviderProps {
@@ -77,16 +84,53 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	const [user, setUser] = useState<User | null>(null);
 	const [isInitializing, setIsInitializing] = useState(true);
+	const [googleStatus, setGoogleStatus] = useState<'disconnected' | 'connected' | 'needs_reauth'>('disconnected');
+	const { getSetting, registerSetting } = useSettings();
+
+	// Register google-client-id setting and keep GoogleAuthService configured
+	useEffect(() => {
+		registerSetting({
+			id: 'google-client-id',
+			category: 'Google',
+			subcategory: 'Authentication',
+			type: 'text',
+			label: 'Google OAuth Client ID',
+			description: 'OAuth 2.0 Client ID from Google Cloud Console. Required for Google Sign-In and Drive sync.',
+			defaultValue: '',
+		});
+	}, [registerSetting]);
+
+	useEffect(() => {
+		const clientId = (getSetting('google-client-id') as unknown as string) ?? '';
+		googleAuthService.configure(clientId);
+	}, [getSetting]);
+
+	const deriveGoogleStatus = useCallback(async (u: User | null) => {
+		if (!u?.googleId) {
+			setGoogleStatus('disconnected');
+			return;
+		}
+		const token = await authService.getGoogleToken(u.id);
+		if (token && token.expiresAt > Date.now() + 60_000) {
+			setGoogleStatus('connected');
+		} else {
+			// Try silent refresh
+			const refreshed = await googleAuthService.refreshToken(u.id);
+			setGoogleStatus(refreshed ? 'connected' : 'needs_reauth');
+		}
+	}, []);
 
 	useEffect(() => {
 		const initAuth = async () => {
 			await authService.initialize();
-			setUser(authService.getCurrentUser());
+			const currentUser = authService.getCurrentUser();
+			setUser(currentUser);
+			await deriveGoogleStatus(currentUser);
 			setIsInitializing(false);
 		};
 
 		initAuth();
-	}, []);
+	}, [deriveGoogleStatus]);
 
 	const login = async (username: string, password: string): Promise<User> => {
 		const loggedInUser = await authService.login(username, password);
@@ -125,8 +169,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 	};
 
 	const logout = async (): Promise<void> => {
+		if (user?.googleId) {
+			await googleAuthService.revokeToken(user.id);
+		}
 		await authService.logout();
 		setUser(null);
+		setGoogleStatus('disconnected');
 	};
 
 	const updateUser = async (updatedUser: User): Promise<User> => {
@@ -211,12 +259,79 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 		return authService.cleanupExpiredGuests();
 	};
 
+	const signInWithGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+		try {
+			const result = await googleAuthService.signIn();
+			if (!result) return { success: false, error: 'Sign-in cancelled' };
+			const signedInUser = await authService.signInWithGoogle(result.profile, result.accessToken);
+			setUser(signedInUser);
+			setGoogleStatus('connected');
+			return { success: true };
+		} catch (err) {
+			const error = err instanceof Error ? err.message : 'Google sign-in failed';
+			console.error('[AuthContext] signInWithGoogle error:', err);
+			return { success: false, error };
+		}
+	};
+
+	const linkGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+		if (!user) return { success: false, error: 'Not authenticated' };
+		try {
+			const result = await googleAuthService.signIn();
+			if (!result) return { success: false, error: 'Sign-in cancelled' };
+			const updatedUser = await authService.linkGoogleAccount(user.id, result.profile, result.accessToken);
+			setUser(updatedUser);
+			setGoogleStatus('connected');
+			return { success: true };
+		} catch (err) {
+			const error = err instanceof Error ? err.message : 'Failed to link Google account';
+			console.error('[AuthContext] linkGoogle error:', err);
+			return { success: false, error };
+		}
+	};
+
+	const unlinkGoogle = async (): Promise<{ success: boolean; error?: string }> => {
+		if (!user) return { success: false, error: 'Not authenticated' };
+		try {
+			await googleAuthService.revokeToken(user.id);
+			const updatedUser = await authService.unlinkGoogleAccount(user.id);
+			setUser(updatedUser);
+			setGoogleStatus('disconnected');
+			return { success: true };
+		} catch (err) {
+			const error = err instanceof Error ? err.message : 'Failed to unlink Google account';
+			console.error('[AuthContext] unlinkGoogle error:', err);
+			return { success: false, error };
+		}
+	};
+
+	const requestDriveAccess = async (): Promise<{ success: boolean; error?: string }> => {
+		if (!user?.googleId) return { success: false, error: 'Not signed in with Google' };
+		try {
+			// Re-run interactive sign-in to ensure drive.file scope is granted
+			const result = await googleAuthService.signIn();
+			if (!result) return { success: false, error: 'Cancelled' };
+			await authService.storeGoogleToken({
+				userId: user.id,
+				accessToken: result.accessToken,
+				expiresAt: Date.now() + 55 * 60 * 1000,
+				scopes: result.tokenResponse.scope.split(' '),
+			});
+			setGoogleStatus('connected');
+			return { success: true };
+		} catch (err) {
+			const error = err instanceof Error ? err.message : 'Failed to request Drive access';
+			return { success: false, error };
+		}
+	};
+
 	return (
 		<AuthContext.Provider
 			value={{
 				user,
 				isAuthenticated: !!user,
 				isInitializing,
+				googleStatus,
 				login,
 				register,
 				createGuestAccount,
@@ -237,6 +352,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 				updatePassword,
 				isGuestUser,
 				cleanupExpiredGuests,
+				signInWithGoogle,
+				linkGoogle,
+				unlinkGoogle,
+				requestDriveAccess,
 			}}
 		>
 			{children}

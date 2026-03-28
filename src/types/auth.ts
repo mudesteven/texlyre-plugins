@@ -5,6 +5,7 @@ export interface AuthContextType {
 	user: User | null;
 	isAuthenticated: boolean;
 	isInitializing: boolean;
+	googleStatus: 'disconnected' | 'connected' | 'needs_reauth';
 	login: (username: string, password: string) => Promise<User>;
 	register: (
 		username: string,
@@ -44,6 +45,10 @@ export interface AuthContextType {
 	updatePassword: (userId: string, newPassword: string) => Promise<User>;
 	isGuestUser: (user?: User | null) => boolean;
 	cleanupExpiredGuests: () => Promise<void>;
+	signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+	linkGoogle: () => Promise<{ success: boolean; error?: string }>;
+	unlinkGoogle: () => Promise<{ success: boolean; error?: string }>;
+	requestDriveAccess: () => Promise<{ success: boolean; error?: string }>;
 }
 
 export interface User {
@@ -59,4 +64,32 @@ export interface User {
 	isGuest?: boolean;
 	sessionId?: string;
 	expiresAt?: number;
+	// Google account fields
+	googleId?: string;
+	googleEmail?: string;
+	googlePicture?: string;
+	googleLinkedAt?: number;
+}
+
+export interface GoogleProfile {
+	sub: string;
+	email: string;
+	name: string;
+	picture: string;
+}
+
+export interface GoogleToken {
+	userId: string;
+	accessToken: string;
+	expiresAt: number;
+	scopes: string[];
+	idToken?: string;
+}
+
+export interface DriveFileMapEntry {
+	userId: string;
+	projectId: string;
+	path: string;
+	driveFileId: string;
+	lastSynced: number;
 }

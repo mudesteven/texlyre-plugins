@@ -12,10 +12,17 @@ import {
 
 import { useFileTree } from '../hooks/useFileTree';
 import { useSettings } from '../hooks/useSettings';
+import { useAuth } from '../hooks/useAuth';
 import { latexService } from '../services/LaTeXService';
 import type { LaTeXContextType, LaTeXOutputFormat } from '../types/latex';
 import { parseUrlFragments } from '../utils/urlUtils';
 import { pdfWindowService } from '../services/PdfWindowService';
+import { googleDriveService } from '../services/GoogleDriveService';
+
+function getProjectIdFromUrl(): string | null {
+  const match = window.location.hash.match(/yjs:([^&]+)/);
+  return match?.[1] ?? null;
+}
 
 export const LaTeXContext = createContext<LaTeXContextType | null>(null);
 
@@ -26,6 +33,7 @@ interface LaTeXProviderProps {
 export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
   const { fileTree, refreshFileTree } = useFileTree();
   const { registerSetting, getSetting } = useSettings();
+  const { user, googleStatus } = useAuth();
   const [isCompiling, setIsCompiling] = useState<boolean>(false);
   const [hasAutoCompiled, setHasAutoCompiled] = useState(false);
   const [compileError, setCompileError] = useState<string | null>(null);
@@ -190,6 +198,17 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
     latexService.setTexliveEndpoint(initialTexliveEndpoint);
     latexService.setStoreCache(initialStoreCache);
     latexService.setStoreWorkingDirectory(initialStoreWorkingDirectory);
+
+    // Only register if not already registered by TypstContext
+    registerSetting({
+      id: 'google-drive-auto-sync-on-compile',
+      category: 'Google',
+      subcategory: 'Drive Sync',
+      type: 'checkbox',
+      label: 'Upload PDF to Drive after compile',
+      description: 'Automatically upload the compiled PDF to Google Drive after each successful compilation.',
+      defaultValue: true,
+    });
   }, [registerSetting, getSetting]);
 
   useEffect(() => {
@@ -252,7 +271,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
       setCompileLog(result.log);
       if (result.status === 0 && result.pdf) {
         switch (format) {
-          case 'pdf':
+          case 'pdf': {
             setCompiledPdf(result.pdf);
             setCurrentView('output');
             setLogIndicator('success');
@@ -260,7 +279,18 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
             const fileName = mainFileName.split('/').pop()?.replace(/\.(tex|ltx|latex)$/i, '.pdf') || 'output.pdf';
             const projectName = getProjectName();
             pdfWindowService.sendPdfUpdate(result.pdf, fileName, projectName);
+
+            // Auto-upload to Google Drive if connected and setting enabled
+            if (googleStatus === 'connected' && user &&
+                getSetting('google-drive-auto-sync-on-compile')?.value !== false) {
+              const projectId = getProjectIdFromUrl();
+              if (projectId) {
+                googleDriveService.uploadPdf(user.id, projectId, result.pdf, fileName)
+                  .catch(err => console.warn('[LaTeXContext] Drive PDF upload failed:', err));
+              }
+            }
             break;
+          }
           case 'canvas-pdf':
             setCompiledCanvas(result.pdf);
             setCurrentView('output');
@@ -348,7 +378,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
       setCompileLog(result.log);
       if (result.status === 0 && result.pdf) {
         switch (format) {
-          case 'pdf':
+          case 'pdf': {
             setCompiledPdf(result.pdf);
             setCurrentView('output');
             setLogIndicator('success');
@@ -356,7 +386,18 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
             const fileName = mainFileName.split('/').pop()?.replace(/\.(tex|ltx|latex)$/i, '.pdf') || 'output.pdf';
             const projectName = getProjectName();
             pdfWindowService.sendPdfUpdate(result.pdf, fileName, projectName);
+
+            // Auto-upload to Google Drive if connected and setting enabled
+            if (googleStatus === 'connected' && user &&
+                getSetting('google-drive-auto-sync-on-compile')?.value !== false) {
+              const projectId = getProjectIdFromUrl();
+              if (projectId) {
+                googleDriveService.uploadPdf(user.id, projectId, result.pdf, fileName)
+                  .catch(err => console.warn('[LaTeXContext] Drive PDF upload (clear cache) failed:', err));
+              }
+            }
             break;
+          }
           case 'canvas-pdf':
             setCompiledCanvas(result.pdf);
             setCurrentView('output');

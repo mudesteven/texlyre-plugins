@@ -14,6 +14,7 @@ interface UserDropdownProps {
   onOpenDeleteAccount: () => void;
   onOpenUpgrade?: () => void;
   isGuest?: boolean;
+  googlePicture?: string;
 }
 
 const UserDropdown: React.FC<UserDropdownProps> = ({
@@ -23,7 +24,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
   onOpenExport,
   onOpenDeleteAccount,
   onOpenUpgrade,
-  isGuest = false
+  isGuest = false,
+  googlePicture,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -62,7 +64,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({
         aria-expanded={isOpen}
         aria-haspopup="true">
 
-        <UserIcon />
+        {googlePicture ? (
+          <img
+            src={googlePicture}
+            alt={displayUsername}
+            className="user-dropdown-avatar"
+            referrerPolicy="no-referrer"
+          />
+        ) : (
+          <UserIcon />
+        )}
         <span>{displayUsername}</span>
       </button>
 
