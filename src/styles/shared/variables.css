@@ -21,7 +21,10 @@
 }
 
 /* ── Nord Light ───────────────────────────────────── */
-[data-theme="light"] {
+/* Use :root[data-theme="light"] (specificity 0,2,0) to beat Pico's
+   :root:not([data-theme=dark]) selector which also has specificity 0,2,0
+   but comes earlier in the stylesheet, so ours wins by source order. */
+:root[data-theme="light"] {
 	--pico-background: #eceff4;
 	--pico-secondary-background: #e5e9f0;
 	--pico-primary: #5e81ac;
@@ -29,7 +32,6 @@
 	--pico-primary-focus: rgba(94, 129, 172, 0.14);
 	--pico-primary-inverse: #eceff4;
 	--pico-secondary: #6b7d99;
-	--pico-secondary-background: #e5e9f0;
 	--pico-muted-color: #8898b0;
 	--pico-muted-border-color: #d8dee9;
 	--pico-color: #2e3440;
@@ -111,6 +113,6 @@
 	--hover-background: #434c5e;
 }
 
-[data-theme="light"] {
+:root[data-theme="light"] {
 	--hover-background: #dde0e5;
 }
