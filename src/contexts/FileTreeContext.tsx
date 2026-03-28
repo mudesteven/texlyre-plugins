@@ -18,6 +18,7 @@ import { collabService } from '../services/CollabService';
 import { fileConflictService } from '../services/FileConflictService';
 import { fileOperationNotificationService } from '../services/FileOperationNotificationService';
 import { fileStorageService } from '../services/FileStorageService';
+import { useServerMode } from './ServerModeContext';
 import type { DocumentList } from '../types/documents';
 import type { FileNode, FileTreeContextType } from '../types/files';
 import type { YjsDocUrl } from '../types/yjs';
@@ -44,6 +45,7 @@ export const FileTreeProvider: React.FC<FileTreeProviderProps> = ({
 }) => {
   const { data: doc, changeData: changeDoc } = useCollab<DocumentList>();
   const { registerSetting, getSetting } = useSettings();
+  const { syncProjectFiles } = useServerMode();
   const [fileTree, setFileTree] = useState<FileNode[]>([]);
   const [selectedFileId, setSelectedFileId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -111,6 +113,8 @@ export const FileTreeProvider: React.FC<FileTreeProviderProps> = ({
         try {
           await fileStorageService.initialize(docUrl);
           storageInitialized.current = true;
+          const projectId = fileStorageService.getCurrentProjectId();
+          if (projectId) syncProjectFiles(projectId).catch(console.warn);
           const tree = await fileStorageService.buildFileTree();
           setFileTree(tree);
           setIsLoading(false);

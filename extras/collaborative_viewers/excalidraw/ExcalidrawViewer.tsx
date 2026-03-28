@@ -16,8 +16,8 @@ function loadExcalidraw(): Promise<void> {
 	// @ts-ignore
 	_loadPromise = import(/* @vite-ignore */ '@excalidraw/excalidraw') // skipcq
 		.then((mod) => {
-			_ExcalidrawComponent =
-				mod.Excalidraw ?? mod.default?.Excalidraw ?? null;
+			// @ts-ignore
+			_ExcalidrawComponent = mod.Excalidraw ?? (mod.default as any)?.Excalidraw ?? null;
 		})
 		.catch(() => {
 			_loadError =

@@ -1,9 +1,25 @@
 import path from "node:path";
+import { readFileSync } from "node:fs";
 import basicSsl from "@vitejs/plugin-basic-ssl";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import wasm from "vite-plugin-wasm";
+import { syncServerPlugin } from "./plugins/sync-server";
+
+// Load .env manually so plugins can read process.env before Vite processes it
+try {
+  const env = readFileSync(path.resolve(__dirname, '.env'), 'utf8');
+  for (const line of env.split('\n')) {
+    const t = line.trim();
+    if (!t || t.startsWith('#')) continue;
+    const eq = t.indexOf('=');
+    if (eq === -1) continue;
+    const k = t.slice(0, eq).trim();
+    const v = t.slice(eq + 1).trim().replace(/^["']|["']$/g, '');
+    if (!(k in process.env)) process.env[k] = v;
+  }
+} catch { /* no .env file */ }
 
 const useHttps = process.env.VITE_USE_HTTPS === "true";
 
@@ -42,6 +58,7 @@ export default defineConfig({
 	},
 
 	plugins: [
+		syncServerPlugin(),
 		wasm(),
 		react(),
 		...(useHttps ? [basicSsl()] : []),

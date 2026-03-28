@@ -61,6 +61,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { EditorProvider } from './contexts/EditorContext';
 import { LSPConfigProvider } from './contexts/LSPConfigContext';
 import { FileSystemBackupProvider } from './contexts/FileSystemBackupContext';
+import { ServerModeProvider } from './contexts/ServerModeContext';
 import { OfflineProvider } from './contexts/OfflineContext';
 import { PropertiesProvider } from './contexts/PropertiesContext';
 import { SecretsContext, SecretsProvider } from './contexts/SecretsContext';
@@ -119,6 +120,7 @@ function App() {
 				<LanguageProvider>
 					<OfflineProvider>
 						<AuthProvider>
+							<ServerModeProvider>
 							<PropertiesProvider>
 								<ThemeProvider
 									defaultThemeId="texlyre-theme"
@@ -135,6 +137,7 @@ function App() {
 									</SecretsProvider>
 								</ThemeProvider>
 							</PropertiesProvider>
+							</ServerModeProvider>
 						</AuthProvider>
 					</OfflineProvider>
 				</LanguageProvider>

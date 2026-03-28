@@ -491,8 +491,32 @@ class AuthService {
 		return this.currentUser;
 	}
 
+	/**
+	 * Seed local IndexedDB with an account + projects pulled from the sync server.
+	 * Called on new devices when the user logs in via "Sign in from server".
+	 * Password verification must happen before calling this.
+	 */
+	async importServerAccount(user: User, projects: Project[]): Promise<User> {
+		if (!this.db) await this.initialize();
+		const tx = this.db!.transaction([this.USER_STORE, this.PROJECT_STORE], 'readwrite');
+		await tx.objectStore(this.USER_STORE).put(user);
+		for (const project of projects) {
+			await tx.objectStore(this.PROJECT_STORE).put(project);
+		}
+		await tx.done;
+		this.currentUser = user;
+		localStorage.setItem('texlyre-current-user', user.id);
+		return user;
+	}
+
 	isAuthenticated(): boolean {
 		return !!this.currentUser;
+	}
+
+	/** Verify a plaintext password directly against a known hash (used for server import). */
+	async verifyPasswordHash(password: string, hash: string): Promise<boolean> {
+		const passwordHash = await this.hashPassword(password);
+		return passwordHash === hash;
 	}
 
 	async verifyPassword(userId: string, password: string): Promise<boolean> {
