@@ -1,22 +1,16 @@
 .codemirror-toolbar {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     align-items: center;
     gap: 1px;
-    padding: 0 6px;
+    padding: 2px 6px;
+    padding-right: var(--plugin-controls-width, 8px);
     background-color: var(--pico-background) !important;
     border-bottom: 1px solid var(--accent-border);
     position: relative;
     flex-shrink: 0;
     width: auto !important;
-    height: 30px;
-    overflow: hidden;
-}
-
-.codemirror-toolbar::after {
-    content: '';
-    display: table;
-    clear: both;
+    overflow: visible;
 }
 
 .codemirror-toolbar__icon {
@@ -37,13 +31,21 @@
 }
 
 .ͼ1 .codemirror-toolbar__item {
-    height: 22px !important;
-    padding: 0 5px;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 24px !important;
+    width: 26px !important;
+    padding: 0 !important;
     border-radius: 3px;
+    flex-shrink: 0;
 }
 
 .ͼ1 .codemirror-toolbar__item svg {
-    height: 16px;
+    width: 15px;
+    height: 15px;
+    display: block;
+    flex-shrink: 0;
 }
 
 .ͼ1 .codemirror-toolbar__item:hover {
@@ -186,7 +188,6 @@
     border-radius: 3px;
     border: none;
     color: var(--pico-secondary);
-    padding-top: 0;
 }
 
 .codemirror-toolbar [data-item="undo"]:hover,
@@ -226,4 +227,59 @@
 .codemirror-toolbar [data-item="typst-highlight"]:hover,
 .codemirror-toolbar [data-item="latex-highlight"]:hover {
     background-color: rgba(255, 255, 0, 0.5);
+}
+
+/* ── Collapse toggle button ──────────────────────────────────────────────── */
+
+.toolbar-collapse-btn {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 22px !important;
+    height: 24px !important;
+    margin-left: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 3px !important;
+    box-shadow: none !important;
+    color: var(--pico-muted-color) !important;
+    cursor: pointer !important;
+    flex-shrink: 0;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s, background-color 0.15s;
+}
+
+.toolbar-collapse-btn:hover {
+    opacity: 1 !important;
+    color: var(--text-color) !important;
+    background-color: var(--hover-background) !important;
+}
+
+/* ── Collapsed state: hide all non-basic items ───────────────────────────── */
+
+.codemirror-toolbar.is-collapsed [data-item] {
+    display: none !important;
+}
+
+.codemirror-toolbar.is-collapsed .codemirror-toolbar__split,
+.codemirror-toolbar.is-collapsed .codemirror-toolbar__space {
+    display: none !important;
+}
+
+/* Re-show the basic set */
+.codemirror-toolbar.is-collapsed [data-item="latex-bold"],
+.codemirror-toolbar.is-collapsed [data-item="typst-bold"],
+.codemirror-toolbar.is-collapsed [data-item="latex-italic"],
+.codemirror-toolbar.is-collapsed [data-item="typst-italic"],
+.codemirror-toolbar.is-collapsed [data-item="latex-underline"],
+.codemirror-toolbar.is-collapsed [data-item="typst-underline"],
+.codemirror-toolbar.is-collapsed [data-item="latex-textcolor"],
+.codemirror-toolbar.is-collapsed [data-item="typst-textcolor"],
+.codemirror-toolbar.is-collapsed [data-item="latex-highlight"],
+.codemirror-toolbar.is-collapsed [data-item="typst-highlight"],
+.codemirror-toolbar.is-collapsed [data-item="undo"],
+.codemirror-toolbar.is-collapsed [data-item="redo"],
+.codemirror-toolbar.is-collapsed [data-item="fullScreen"] {
+    display: flex !important;
 }

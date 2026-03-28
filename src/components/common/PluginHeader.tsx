@@ -1,9 +1,10 @@
 // src/components/common/PluginHeader.tsx
+import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import type React from 'react';
 
 import type { Awareness } from 'y-protocols/awareness';
 import CollaboratorAvatars from './CollaboratorAvatars';
-import { InfoIcon, LinkIcon } from './Icons';
 
 interface PluginHeaderProps {
 	fileName: string;
@@ -25,23 +26,6 @@ interface PluginControlGroupProps {
 	className?: string;
 }
 
-const formatTooltipInfo = (
-	info: string | string[],
-	pluginName?: string,
-	pluginVersion?: string,
-): string => {
-	const pluginInfo = pluginName
-		? `${pluginName}${pluginVersion ? ` v${pluginVersion}` : ''}`
-		: '';
-
-	const contentInfo =
-		typeof info === 'string'
-			? info
-			: info.filter((line) => line.trim()).join('\n');
-
-	return pluginInfo ? `${pluginInfo}\n${contentInfo}` : contentInfo;
-};
-
 export const PluginControlGroup: React.FC<PluginControlGroupProps> = ({
 	children,
 	className = '',
@@ -50,62 +34,100 @@ export const PluginControlGroup: React.FC<PluginControlGroupProps> = ({
 };
 
 export const PluginHeader: React.FC<PluginHeaderProps> = ({
-	fileName,
-	filePath,
-	pluginName,
-	pluginVersion,
-	tooltipInfo,
 	controls,
-	onNavigateToLinkedFile,
-	linkedFileInfo,
 	awareness,
 }) => {
-	const formattedTooltip = formatTooltipInfo(
-		tooltipInfo,
-		pluginName,
-		pluginVersion,
-	);
+	const [isOverflowing, setIsOverflowing] = useState(false);
+	const [overflowOpen, setOverflowOpen] = useState(false);
+	const barRef = useRef<HTMLDivElement>(null);
+	const btnRef = useRef<HTMLButtonElement>(null);
+	const dropdownRef = useRef<HTMLDivElement>(null);
+
+	// Detect overflow in the controls bar
+	useEffect(() => {
+		const bar = barRef.current;
+		if (!bar) return;
+		const observer = new ResizeObserver(() => {
+			setIsOverflowing(bar.scrollWidth > bar.clientWidth + 2);
+		});
+		observer.observe(bar);
+		return () => observer.disconnect();
+	}, []);
+
+	// Sync padding-right on the toolbar so toolbar buttons don't slide under the controls
+	useLayoutEffect(() => {
+		const controls = barRef.current?.closest('.plugin-controls') as HTMLElement | null;
+		if (!controls) return;
+		// Set immediately so the toolbar has correct padding before first paint
+		document.documentElement.style.setProperty('--plugin-controls-width', `${controls.offsetWidth + 12}px`);
+		const observer = new ResizeObserver(() => {
+			document.documentElement.style.setProperty('--plugin-controls-width', `${controls.offsetWidth + 12}px`);
+		});
+		observer.observe(controls);
+		return () => {
+			observer.disconnect();
+			document.documentElement.style.removeProperty('--plugin-controls-width');
+		};
+	}, []);
+
+	// Close overflow dropdown on outside click
+	useEffect(() => {
+		if (!overflowOpen) return;
+		const handler = (e: MouseEvent) => {
+			if (
+				dropdownRef.current && !dropdownRef.current.contains(e.target as Node) &&
+				btnRef.current && !btnRef.current.contains(e.target as Node)
+			) {
+				setOverflowOpen(false);
+			}
+		};
+		document.addEventListener('mousedown', handler);
+		return () => document.removeEventListener('mousedown', handler);
+	}, [overflowOpen]);
+
+	const getDropdownPos = useCallback(() => {
+		if (!btnRef.current) return { top: 64, right: 8 };
+		const rect = btnRef.current.getBoundingClientRect();
+		return { top: rect.bottom + 4, right: window.innerWidth - rect.right };
+	}, []);
+
+	const dropdownPos = overflowOpen ? getDropdownPos() : null;
 
 	return (
 		<div className="plugin-header">
-			<div className="file-info">
-				<div className="file-title-row">
-					<h3>{fileName}</h3>
-					{linkedFileInfo && onNavigateToLinkedFile && (
-						<button
-							onClick={onNavigateToLinkedFile}
-							title={`Navigate to linked file: ${linkedFileInfo.fileName}`}
-							className="linked-file-icon"
-						>
-							<LinkIcon />
-						</button>
-					)}
-				</div>
-				<div className="filepath-info">
-					<span
-						className={linkedFileInfo ? 'linked-filepath' : ''}
-						onClick={
-							linkedFileInfo && onNavigateToLinkedFile
-								? onNavigateToLinkedFile
-								: undefined
-						}
-						title={
-							linkedFileInfo
-								? `Navigate to linked file: ${linkedFileInfo.fileName}`
-								: undefined
-						}
-					>
-						{filePath || fileName}
-					</span>
-					<abbr title={formattedTooltip} className="info-icon-abbr">
-						<InfoIcon />
-					</abbr>
-				</div>
-			</div>
 			<div className="plugin-controls">
 				{awareness && <CollaboratorAvatars awareness={awareness} />}
-				{controls}
+				{/* Visible bar — clips on overflow */}
+				<div className="plugin-controls-bar" ref={barRef}>
+					{controls}
+				</div>
+				{/* Overflow button — shown when bar clips */}
+				{isOverflowing && (
+					<button
+						ref={btnRef}
+						className="plugin-overflow-btn"
+						onClick={() => setOverflowOpen(o => !o)}
+						title="More actions"
+					>
+						···
+					</button>
+				)}
 			</div>
+
+			{overflowOpen && dropdownPos && createPortal(
+				<div
+					ref={dropdownRef}
+					className="plugin-overflow-dropdown"
+					style={{
+						position: 'fixed',
+						top: dropdownPos.top,
+						right: dropdownPos.right,
+					}}
+				>
+					{controls}
+				</div>,
+				document.body
+			)}
 		</div>
 	);
 };

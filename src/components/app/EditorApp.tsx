@@ -52,6 +52,7 @@ import PrivacyModal from '../common/PrivacyModal';
 import GuestUpgradeBanner from '../auth/GuestUpgradeBanner';
 import GuestUpgradeModal from '../auth/GuestUpgradeModal';
 import { TypstOutputFormat } from '../../types/typst';
+import EditorMenuBar from './EditorMenuBar';
 
 interface EditorAppProps {
   docUrl: YjsDocUrl;
@@ -214,6 +215,20 @@ const EditorAppView: React.FC<EditorAppProps> = ({
       document.removeEventListener('trigger-typst-compile', handleTypstCompile);
     };
   }, [isCompiling, isTypstCompiling]);
+
+  useEffect(() => {
+    const handleOpenKbShortcuts = () => setShowKeyboardShortcuts(true);
+    const handleOpenPrivacy = () => setShowPrivacy(true);
+    const handleOpenProjectSettings = () => setIsEditingMetadata(true);
+    document.addEventListener('open-keyboard-shortcuts', handleOpenKbShortcuts);
+    document.addEventListener('open-privacy', handleOpenPrivacy);
+    document.addEventListener('open-project-settings', handleOpenProjectSettings);
+    return () => {
+      document.removeEventListener('open-keyboard-shortcuts', handleOpenKbShortcuts);
+      document.removeEventListener('open-privacy', handleOpenPrivacy);
+      document.removeEventListener('open-project-settings', handleOpenProjectSettings);
+    };
+  }, []);
 
   useEffect(() => {
     if (doc && isConnected) {
@@ -519,6 +534,7 @@ const EditorAppView: React.FC<EditorAppProps> = ({
           </a>
 
           <div className="menubar-divider" />
+          <EditorMenuBar projectType={projectType} />
         </div>
 
         <div className="menubar-center">

@@ -145,7 +145,7 @@
 }
 
 /* Icon buttons in menubar */
-.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle) {
+.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle):not(.editor-menu-btn) {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -162,9 +162,96 @@
 	height: 30px;
 }
 
-.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle):hover {
+.menubar button:not(.back-btn):not(.compile-button):not(.export-button):not(.user-dropdown-button):not(.dropdown-toggle):not(.editor-menu-btn):hover {
 	opacity: 1;
 	background-color: var(--hover-background);
+}
+
+/* ── Editor menu bar items (Insert / Format / …) ─────────────────────────── */
+.editor-menu-btn {
+	padding: 0 9px;
+	height: 30px;
+	background: none;
+	border: none;
+	border-radius: var(--radius-sm);
+	color: var(--pico-secondary);
+	font-size: 12.5px;
+	font-weight: 400;
+	cursor: pointer;
+	transition: background-color var(--transition-fast), color var(--transition-fast);
+	white-space: nowrap;
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+}
+
+.editor-menu-btn:hover,
+.editor-menu-btn.open {
+	background-color: var(--hover-background);
+	color: var(--text-color);
+}
+
+/* Dropdown card */
+.editor-menu-dropdown {
+	background-color: var(--pico-secondary-background);
+	border: 1px solid var(--accent-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	z-index: var(--z-popup);
+	min-width: 210px;
+	max-height: 80vh;
+	overflow-y: auto;
+	padding: 4px;
+	display: flex;
+	flex-direction: column;
+}
+
+.editor-menu-section-label {
+	padding: 6px 10px 2px;
+	font-size: 10px;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--pico-muted-color);
+	user-select: none;
+}
+
+.editor-menu-separator {
+	height: 1px;
+	background-color: var(--accent-border);
+	margin: 3px 4px;
+}
+
+.editor-menu-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 5px 10px;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	font-size: 12.5px;
+	color: var(--text-color);
+	border: none;
+	background: none;
+	width: 100%;
+	text-align: left;
+	transition: background-color var(--transition-fast);
+}
+
+.editor-menu-item:hover {
+	background-color: var(--hover-background);
+}
+
+.editor-menu-item-label {
+	flex: 1;
+}
+
+.editor-menu-item-hint {
+	font-size: 10.5px;
+	color: var(--pico-muted-color);
+	font-family: var(--font-mono, monospace);
+	white-space: nowrap;
+	opacity: 0.7;
 }
 
 /* Compile button: green, compact */
@@ -304,13 +391,29 @@
 	color: var(--statusbar-fg);
 }
 
-/* Keep project-type-badge inline */
-.project-type-badge {
+/* Statusbar project-type-badge — plain inline text, no box */
+.statusbar .project-type-badge {
 	display: flex;
 	align-items: center;
-	gap: var(--space-xs);
-	font-size: 0.7rem;
-	color: var(--pico-secondary, #888);
+}
+
+.statusbar .project-type-badge .type-info-help {
+	background: none !important;
+	border: none !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	font-size: 11px !important;
+	color: var(--statusbar-fg) !important;
+	opacity: 0.82;
+	cursor: default;
+	line-height: 1;
+}
+
+.statusbar .project-type-badge .type-info-help:hover {
+	opacity: 1;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 /* ── Panel borders in workspace ──────────────────── */

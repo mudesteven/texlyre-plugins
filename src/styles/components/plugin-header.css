@@ -1,125 +1,65 @@
+/* Plugin header: collapsed to 0px, controls float over the right end of the CodeMirror toolbar */
+
 .plugin-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0 8px;
-	height: 38px;
-	border-bottom: 1px solid var(--accent-border, #333);
-	background-color: var(--pico-secondary-background);
+	height: 0;
+	position: relative;
+	overflow: visible;
+	z-index: 5;
+	border: none;
+	background: transparent;
+	padding: 0;
 	flex-shrink: 0;
-	flex-wrap: nowrap;
-	gap: 0.1rem;
 }
 
-.plugin-header .file-info {
+/* Controls are absolutely positioned at the right of the toolbar row (30px tall) */
+.plugin-controls {
+	position: absolute;
+	top: 0;
+	right: 8px;
+	height: 30px;
 	display: flex;
-	flex-direction: column;
-	padding: 0;
+	align-items: center;
 	gap: 1px;
+	flex-wrap: nowrap;
+	max-width: 60%;
+}
+
+/* The scrollable bar inside — clips when too narrow */
+.plugin-controls-bar {
+	display: flex;
+	align-items: center;
+	gap: 1px;
+	flex-wrap: nowrap;
+	overflow: hidden;
+	flex-shrink: 1;
 	min-width: 0;
 }
 
-.plugin-header .file-info h3 {
-	margin: 0;
-	font-size: 0.72rem;
-	font-weight: 500;
-	color: var(--text-color);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
-.plugin-header .file-info div {
-	font-size: 0.55rem;
-	height: var(--space-xs);
-	color: var(--pico-secondary);
-}
-
-.plugin-header .file-info span {
-	font-size: 0.6rem;
-	color: var(--pico-secondary);
-}
-
-.plugin-header .filepath-info {
-	font-size: 0.55rem;
-	display: flex;
-	align-items: center;
-	padding-top: 0.9rem;
-	margin-bottom: 0;
-	padding-bottom: 0;
-	gap: 0.1rem;
-}
-
-.file-title-row {
-	display: flex;
-	align-items: center;
-	gap: 0.3rem;
-}
-
-.linked-file-icon {
-	padding: 0.15rem;
-	background: none;
-	border: 1px solid var(--accent-border, #444);
-	border-radius: 3px;
-	color: var(--pico-secondary);
-	cursor: pointer;
-	transition: all 0.2s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 16px;
-	height: 16px;
-}
-
-.linked-file-icon:hover {
-	background-color: var(--pico-primary-focus);
-	border-color: var(--pico-primary);
-	color: var(--text-color);
-}
-
-.linked-file-icon svg {
-	width: 0.55rem;
-	height: 0.55rem;
-}
-
-.linked-filepath {
-	cursor: pointer;
-	transition: color 0.2s ease;
-}
-
-.linked-filepath:hover {
-	color: var(--pico-primary);
-}
-
-.info-icon-abbr {
-	border-bottom: none !important;
-	cursor: inherit !important;
-	text-decoration: none !important;
-	padding-bottom: 0.2rem;
-}
-
-.info-icon-abbr svg {
-	margin-left: var(--space-xs);
-	width: 0.6rem;
-	height: 0.6rem;
-	transition: fill 0.2s ease;
-}
-
+/* Control groups from each editor */
 .control-group {
 	display: flex;
-	gap: 2px;
+	gap: 1px;
 	align-items: center;
-	padding: 4px 2px;
 	border-radius: 4px;
 	background-color: transparent;
 	border: none;
+	flex-shrink: 0;
+}
+
+.control-group + .control-group {
+	border-left: 1px solid var(--accent-border);
+	padding-left: 3px;
+	margin-left: 2px;
 }
 
 .control-group button {
-	padding: 0 8px;
+	padding: 0;
+	width: 24px;
+	height: 24px;
 	font-size: 0.78rem;
-	background-color: transparent;
-	border: none;
+	background-color: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
 	border-radius: 3px;
 	color: var(--pico-secondary);
 	cursor: pointer;
@@ -128,18 +68,18 @@
 	align-items: center;
 	justify-content: center;
 	gap: 4px;
-	height: 26px;
+	flex-shrink: 0;
 	white-space: nowrap;
 }
 
 .control-group button:hover:not(:disabled) {
-	background-color: var(--hover-background);
+	background-color: var(--hover-background) !important;
 	color: var(--text-color);
 }
 
 .control-group button.active {
-	background-color: var(--pico-primary);
-	color: var(--pico-primary-inverse);
+	background-color: var(--hover-background) !important;
+	color: var(--pico-primary) !important;
 }
 
 .control-group button:disabled {
@@ -147,28 +87,68 @@
 	cursor: not-allowed;
 }
 
-.plugin-controls {
-	display: flex;
-	gap: 2px;
-	align-items: center;
-	flex-wrap: nowrap;
+.control-group button svg {
+	width: 14px;
+	height: 14px;
+	flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-	.plugin-header {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0.15rem;
-	}
+/* Overflow trigger button */
+.plugin-overflow-btn {
+	flex-shrink: 0;
+	width: 24px;
+	height: 24px;
+	padding: 0 !important;
+	background: transparent !important;
+	border: none !important;
+	box-shadow: none !important;
+	border-radius: 3px;
+	color: var(--pico-secondary);
+	cursor: pointer;
+	font-size: 14px;
+	line-height: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color var(--transition-fast), color var(--transition-fast);
+}
 
-	.plugin-controls {
-		justify-content: center;
-		flex-wrap: wrap;
-	}
+.plugin-overflow-btn:hover {
+	background-color: var(--hover-background) !important;
+	color: var(--text-color);
+}
 
-	.control-group {
-		flex: 1;
-		min-width: max-content;
-		justify-content: center;
-	}
+/* Overflow dropdown (portaled to document.body) */
+.plugin-overflow-dropdown {
+	background-color: var(--pico-secondary-background);
+	border: 1px solid var(--accent-border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-lg);
+	z-index: var(--z-popup);
+	padding: 6px;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 160px;
+}
+
+/* Stack control-groups vertically inside overflow dropdown */
+.plugin-overflow-dropdown .control-group {
+	width: 100%;
+	border-left: none !important;
+	padding-left: 0 !important;
+	margin-left: 0 !important;
+	gap: 2px;
+	flex-wrap: wrap;
+}
+
+.plugin-overflow-dropdown .control-group button {
+	width: auto !important;
+	padding: 0 8px !important;
+	height: 28px;
+}
+
+/* Collab avatars stay compact */
+.plugin-controls .collab-avatars {
+	flex-shrink: 0;
 }

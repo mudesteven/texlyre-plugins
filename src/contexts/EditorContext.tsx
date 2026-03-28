@@ -54,7 +54,7 @@ export const defaultEditorSettings: EditorSettings = {
   syntaxHighlighting: true,
   autoSaveEnabled: false,
   autoSaveDelay: 150,
-  highlightTheme: 'nord' as HighlightTheme,
+  highlightTheme: 'auto' as HighlightTheme,
   vimMode: false,
   spellCheck: true,
   mathLiveEnabled: true,
@@ -317,6 +317,25 @@ export const EditorProvider: React.FC<EditorProviderProps> = ({ children }) => {
     },
     []
   );
+
+  // Re-init editor when app theme changes (so 'auto' highlight theme resolves correctly)
+  useEffect(() => {
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.attributeName === 'data-theme') {
+          setEditorSettings((prev) => {
+            if (prev.highlightTheme === 'auto') {
+              setEditorSettingsVersion((v) => v + 1);
+            }
+            return prev;
+          });
+          break;
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     if (settingsRegisteredOnce.current) return;

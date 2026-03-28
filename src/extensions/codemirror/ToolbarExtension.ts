@@ -11,6 +11,7 @@ import * as TableScopeItems from './toolbar/tableScopeItems';
 import { detectTableScope } from './toolbar/tableScope';
 import * as ColorScopeItems from './toolbar/colorScopeItems';
 import { detectColorScope } from './toolbar/colorScope';
+import { createToolbarCollapsePlugin } from './ToolbarCollapsePlugin';
 
 const split: ToolbarSplit = { type: 'split' };
 const space: ToolbarSpace = { type: 'space' };
@@ -44,6 +45,7 @@ const getCommonEndItems = (isFullScreen: boolean, undoManager?: UndoManager): To
 	CodeMirrorItems.createFullScreen(isFullScreen),
 ];
 
+
 const getItems = (fileType: FileType, isFullScreen: boolean, inTable: boolean, inColor: boolean, undoManager?: UndoManager): ToolbarEntry[] => {
 	const tableItems = inTable ? getTableScopeItems(fileType) : [];
 	const colorItems = inColor ? getColorScopeItems(fileType) : [];
@@ -55,35 +57,17 @@ const getItems = (fileType: FileType, isFullScreen: boolean, inTable: boolean, i
 			LaTeXItems.createItalic(),
 			LaTeXItems.createUnderline(),
 			LaTeXItems.createStrikethrough(),
-			LaTeXItems.createEmph(),
-			LaTeXItems.createTypewriter(),
 			split,
 			LaTeXItems.createSuperscript(),
 			LaTeXItems.createSubscript(),
 			split,
-			LaTeXItems.createSection(),
-			LaTeXItems.createSubsection(),
-			LaTeXItems.createSubsubsection(),
+			LaTeXItems.createInlineMath(),
+			LaTeXItems.createDisplayMath(),
 			split,
 			LaTeXItems.createItemize(),
 			LaTeXItems.createEnumerate(),
-			LaTeXItems.createDescription(),
-			split,
-			LaTeXItems.createInlineMath(),
-			LaTeXItems.createDisplayMath(),
-			LaTeXItems.createEquation(),
-			split,
-			LaTeXItems.createVerbatim(),
-			LaTeXItems.createLstlisting(),
 			split,
 			LaTeXItems.createHyperlink(),
-			LaTeXItems.createQuote(),
-			split,
-			LaTeXItems.createCitation(),
-			LaTeXItems.createReference(),
-			LaTeXItems.createLabel(),
-			LaTeXItems.createFootnote(),
-			split,
 			LaTeXItems.createFigure(),
 			LaTeXItems.createTable(),
 			split,
@@ -100,35 +84,17 @@ const getItems = (fileType: FileType, isFullScreen: boolean, inTable: boolean, i
 		TypstItems.createItalic(),
 		TypstItems.createUnderline(),
 		TypstItems.createStrike(),
-		TypstItems.createMonospace(),
 		split,
 		TypstItems.createSuperscript(),
 		TypstItems.createSubscript(),
 		split,
-		TypstItems.createHeading1(),
-		TypstItems.createHeading2(),
-		TypstItems.createHeading3(),
-		TypstItems.createHeading4(),
+		TypstItems.createInlineMath(),
+		TypstItems.createDisplayMath(),
 		split,
 		TypstItems.createBulletList(),
 		TypstItems.createNumberedList(),
-		TypstItems.createTermList(),
-		split,
-		TypstItems.createInlineMath(),
-		TypstItems.createDisplayMath(),
-		TypstItems.createEquation(),
-		split,
-		TypstItems.createInlineCode(),
-		TypstItems.createCodeBlock(),
 		split,
 		TypstItems.createLink(),
-		TypstItems.createQuote(),
-		split,
-		TypstItems.createCitation(),
-		TypstItems.createReference(),
-		TypstItems.createLabel(),
-		TypstItems.createFootnote(),
-		split,
 		TypstItems.createFigure(),
 		TypstItems.createTable(),
 		split,
@@ -195,5 +161,6 @@ export const createToolbarExtension = (fileType: FileType, undoManager?: UndoMan
 	return [
 		toolbarCompartment.of(toolbar({ items: getItems(fileType, false, false, false, undoManager) })),
 		createToolbarPlugin(fileType, toolbarCompartment, undoManager),
+		createToolbarCollapsePlugin(),
 	];
 };

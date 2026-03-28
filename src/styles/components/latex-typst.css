@@ -78,8 +78,9 @@
 }
 
 .output-header .view-tabs .tab-button.active {
-	background-color: var(--pico-primary);
-	color: var(--pico-primary-inverse);
+	background-color: var(--hover-background);
+	color: var(--text-color);
+	font-weight: 700;
 }
 
 .output-header .view-tabs .tab-button:disabled {

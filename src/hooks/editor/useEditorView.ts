@@ -56,6 +56,7 @@ import {
 } from '../../extensions/codemirror/GenericLSPExtension';
 import { createCodeActionsExtension } from '../../extensions/codemirror/CodeActionsLSPExtension.ts';
 import { createToolbarExtension } from '../../extensions/codemirror/ToolbarExtension';
+import { setActiveEditorView } from '../../extensions/codemirror/activeEditorView';
 import { createMathLiveExtension } from '../../extensions/codemirror/MathLiveExtension';
 import { createPasteExtension } from '../../extensions/codemirror/PasteExtension';
 import { createListingsExtension } from '../../extensions/codemirror/ListingsExtension';
@@ -609,6 +610,7 @@ export const useEditorView = (
         try {
             const view = new EditorView({ state, parent: editorRef.current });
             viewRef.current = view;
+            setActiveEditorView(view, (isLatexFileType ? 'latex' : 'typst'));
 
             if (fileName) {
                 setCurrentFileNameInGenericLSP(fileName);
@@ -640,6 +642,7 @@ export const useEditorView = (
             }
             if (viewRef.current) {
                 filePathCacheService.cleanup();
+                setActiveEditorView(null);
                 viewRef.current.destroy();
                 viewRef.current = null;
             }

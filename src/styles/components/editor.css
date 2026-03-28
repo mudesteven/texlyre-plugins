@@ -35,12 +35,12 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 0;
-	border-bottom: 1px solid var(--accent-border);
 	background-color: var(--pico-secondary-background);
 }
 
 .editor-toolbar:not(:empty) {
 	padding: var(--space-sm);
+	border-bottom: 1px solid var(--accent-border);
 }
 
 .editor-toolbar:has(.linked-file-notice),
