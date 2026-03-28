@@ -1,0 +1,16 @@
+(lang dune 3.12)
+(name texlyre-sync-server)
+(generate_opam_files true)
+
+(package
+ (name texlyre-sync-server)
+ (synopsis "TeXlyre real-time file sync server")
+ (depends
+  (ocaml (>= 5.0))
+  (dream (>= 1.0.0~alpha7))
+  (yojson (>= 2.1))
+  (bcrypt (>= 3.1))
+  (uuidm (>= 0.9))
+  (lwt (>= 5.7))
+  (lwt_ppx (>= 2.1))
+  (ppx_yojson_conv (>= 0.16))))

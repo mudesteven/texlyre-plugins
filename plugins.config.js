@@ -18,10 +18,6 @@ export default {
 	  "backup/gitlab",
 	  "backup/forgejo",
 	  "backup/gitea",
-	  "backup/google-drive",
-	  "themes/texlyre_slim",
-	  "themes/texlyre_wide",
-	  "themes/texlyre_mobile",
-	  "themes/modern"
+	  "backup/google-drive"
 	],
 };

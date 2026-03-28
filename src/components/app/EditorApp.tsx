@@ -53,6 +53,10 @@ import GuestUpgradeBanner from '../auth/GuestUpgradeBanner';
 import GuestUpgradeModal from '../auth/GuestUpgradeModal';
 import { TypstOutputFormat } from '../../types/typst';
 import EditorMenuBar from './EditorMenuBar';
+import { SyncStatusIndicator } from '../common/SyncStatusIndicator';
+import { SyncServerPanel } from '../settings/SyncServerPanel';
+import { useSyncServerContext } from '../../contexts/SyncServerContext';
+import { useSettings } from '../../hooks/useSettings';
 
 interface EditorAppProps {
   docUrl: YjsDocUrl;
@@ -88,6 +92,9 @@ const EditorAppView: React.FC<EditorAppProps> = ({
     clearAllActivities,
     changeDirectory
   } = useFileSystemBackup();
+  const { syncStatus } = useSyncServerContext();
+  const { getSetting } = useSettings();
+  const [showSyncPanel, setShowSyncPanel] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAccountExportModal, setShowAccountExportModal] = useState(false);
   const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false);
@@ -571,6 +578,10 @@ const EditorAppView: React.FC<EditorAppProps> = ({
               currentProjectId={sessionStorage.getItem('currentProjectId')}
               isInEditor={true} />
           }
+          <SyncStatusIndicator
+            status={syncStatus}
+            onClick={() => setShowSyncPanel(true)}
+          />
           {!isOfflineMode &&
             <CollabStatusIndicator
               className="header-collab-status"
@@ -674,6 +685,13 @@ const EditorAppView: React.FC<EditorAppProps> = ({
           <ProfileSettingsModal
             isOpen={showProfileModal}
             onClose={() => setShowProfileModal(false)} />
+
+          <SyncServerPanel
+            isOpen={showSyncPanel}
+            onClose={() => setShowSyncPanel(false)}
+            syncStatus={syncStatus}
+            serverUrl={(getSetting('sync-server-url')?.value as string) ?? 'http://localhost:7331'}
+          />
 
           <ExportAccountModal
             isOpen={showAccountExportModal}

@@ -1,0 +1,19 @@
+services:
+  sync:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "7331:7331"
+    volumes:
+      # Fast local storage — all real-time reads/writes land here
+      - ./data:/data
+      # Mount your google-drive-ocamlfuse path here:
+      # - /mnt/gdrive/texlyre:/fuse:ro   ← uncomment and adjust
+    environment:
+      LOCAL_ROOT: /data
+      # FUSE_ROOT: /fuse                 ← uncomment after mounting Drive
+      PORT: 7331
+      SECRET: "${SECRET:-change-me}"
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:5173}"
+      LOCAL_SYNC_INTERVAL: "2"
+      FUSE_POLL_INTERVAL: "10"

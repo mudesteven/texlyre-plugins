@@ -29,6 +29,10 @@ import DeleteAccountModal from '../profile/DeleteAccountModal';
 import GuestUpgradeBanner from '../auth/GuestUpgradeBanner';
 import GuestUpgradeModal from '../auth/GuestUpgradeModal';
 import { NewProjectIcon } from '../common/Icons';
+import { SyncStatusIndicator } from '../common/SyncStatusIndicator';
+import { SyncServerPanel } from '../settings/SyncServerPanel';
+import { useSyncServerContext } from '../../contexts/SyncServerContext';
+import { useSettings } from '../../hooks/useSettings';
 
 interface ProjectManagerProps {
   onOpenProject: (
@@ -84,6 +88,9 @@ const ProjectApp: React.FC<ProjectManagerProps> = ({
     currentLayout?.defaultFileExplorerWidth || 250
   );
 
+  const { syncStatus } = useSyncServerContext();
+  const { getSetting } = useSettings();
+  const [showSyncPanel, setShowSyncPanel] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showAccountExportModal, setShowAccountExportModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -429,6 +436,10 @@ const ProjectApp: React.FC<ProjectManagerProps> = ({
           {!isGuestUser(user) &&
             <BackupStatusIndicator className="header-backup-indicator" />
           }
+          <SyncStatusIndicator
+            status={syncStatus}
+            onClick={() => setShowSyncPanel(true)}
+          />
           <SettingsButton className="header-settings-button" />
           <UserDropdown
             username={user?.username || ''}
@@ -612,6 +623,13 @@ const ProjectApp: React.FC<ProjectManagerProps> = ({
           <ProfileSettingsModal
             isOpen={showProfileModal}
             onClose={() => setShowProfileModal(false)} />
+
+          <SyncServerPanel
+            isOpen={showSyncPanel}
+            onClose={() => setShowSyncPanel(false)}
+            syncStatus={syncStatus}
+            serverUrl={(getSetting('sync-server-url')?.value as string) ?? 'http://localhost:7331'}
+          />
 
           <ExportAccountModal
             isOpen={showAccountExportModal}

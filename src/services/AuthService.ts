@@ -18,7 +18,7 @@ class AuthService {
 	private readonly DB_NAME = 'texlyre-auth';
 	private readonly USER_STORE = 'users';
 	private readonly PROJECT_STORE = 'projects';
-	private readonly DB_VERSION = 1;
+	private readonly DB_VERSION = 2;
 	private currentUser: User | null = null;
 
 	async initialize(): Promise<void> {

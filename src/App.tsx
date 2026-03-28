@@ -42,6 +42,7 @@ import './styles/components/bibliography.css';
 import './styles/components/chat.css';
 import './styles/components/latex-typst.css';
 import './styles/components/plugin-header.css';
+import './styles/components/sync-server.css';
 import './styles/components/collaborator-avatars.css';
 import './styles/components/settings.css';
 import './styles/components/language.css';
@@ -67,6 +68,7 @@ import { SecretsContext, SecretsProvider } from './contexts/SecretsContext';
 import { SettingsProvider } from './contexts/SettingsContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { SyncServerProvider } from './contexts/SyncServerContext';
 
 function App() {
 	const [isInitializing, setIsInitializing] = useState(true);
@@ -127,9 +129,11 @@ function App() {
 									<SecretsProvider>
 										<FileSystemBackupProvider>
 											<LSPConfigProvider>
-												<EditorProvider>
-													<AppContent />
-												</EditorProvider>
+												<SyncServerProvider>
+													<EditorProvider>
+														<AppContent />
+													</EditorProvider>
+												</SyncServerProvider>
 											</LSPConfigProvider>
 										</FileSystemBackupProvider>
 									</SecretsProvider>

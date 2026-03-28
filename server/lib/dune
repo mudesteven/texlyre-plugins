@@ -1,0 +1,4 @@
+(library
+ (name texlyre_sync)
+ (libraries dream yojson bcrypt uuidm lwt lwt.unix)
+ (preprocess (pps lwt_ppx)))

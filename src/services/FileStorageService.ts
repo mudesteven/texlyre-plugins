@@ -280,6 +280,13 @@ class FileStorageService {
 		}
 		await this.db?.put(this.FILES_STORE, file);
 		fileStorageEventEmitter.emitChange();
+		if (file.type === 'file' && !file.isDeleted) {
+			window.dispatchEvent(
+				new CustomEvent('texlyre:file-stored', {
+					detail: { fileId: file.id, path: file.path, projectId: this.projectId },
+				}),
+			);
+		}
 		return file.id;
 	}
 
