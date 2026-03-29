@@ -75,7 +75,8 @@ class ServerSyncService {
 
   async getFile(projectId: string, filePath: string): Promise<ArrayBuffer | null> {
     try {
-      const r = await fetch(`/api/files/${projectId}/${filePath}`);
+      const p = filePath.replace(/^\/+/, '');
+      const r = await fetch(`/api/files/${projectId}/${p}`);
       if (!r.ok) return null;
       return r.arrayBuffer();
     } catch {
@@ -85,8 +86,9 @@ class ServerSyncService {
 
   async putFile(projectId: string, filePath: string, content: string | ArrayBuffer): Promise<{ modified: number } | null> {
     try {
+      const p = filePath.replace(/^\/+/, '');
       const body = typeof content === 'string' ? new TextEncoder().encode(content) : content;
-      const r = await fetch(`/api/files/${projectId}/${filePath}`, {
+      const r = await fetch(`/api/files/${projectId}/${p}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/octet-stream' },
         body,
@@ -99,7 +101,8 @@ class ServerSyncService {
   }
 
   async deleteFile(projectId: string, filePath: string): Promise<void> {
-    await fetch(`/api/files/${projectId}/${filePath}`, { method: 'DELETE' }).catch(() => {});
+    const p = filePath.replace(/^\/+/, '');
+    await fetch(`/api/files/${projectId}/${p}`, { method: 'DELETE' }).catch(() => {});
   }
 }
 

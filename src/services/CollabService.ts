@@ -213,8 +213,10 @@ class CollabService {
 			finalSignalingServers = this.validateSignalingServers(options.signalingServers);
 		}
 
+		// Pass empty array (not undefined) when no servers configured — undefined causes y-webrtc
+		// to fall back to its own default public servers and spam reconnect attempts.
 		return collabWebrtc.getProvider(roomName, doc, {
-			signaling: finalSignalingServers.length > 0 ? finalSignalingServers : undefined,
+			signaling: finalSignalingServers.length > 0 ? finalSignalingServers : [],
 		});
 	}
 

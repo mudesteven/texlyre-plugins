@@ -64,10 +64,13 @@ export const CollabProvider: React.FC<CollabProviderProps> = ({
 
     const initialProviderType =
       (batchedSettings['collab-provider-type'] as CollabProviderType) ?? 'webrtc';
-    const initialSignalingServers =
-      (batchedSettings['collab-signaling-servers'] as string) ?? 'ws://ywebrtc.localhost:8082/';
-    const initialWebsocketServer =
-      (batchedSettings['collab-websocket-server'] as string) ?? 'ws://yweb.localhost:8082/';
+    // Migrate old localhost defaults — these were placeholder URLs that cause constant reconnect spam
+    const STALE_SIGNALING = 'ws://ywebrtc.localhost:8082/';
+    const STALE_WEBSOCKET = 'ws://yweb.localhost:8082/';
+    const rawSignaling = (batchedSettings['collab-signaling-servers'] as string) ?? '';
+    const rawWebsocket = (batchedSettings['collab-websocket-server'] as string) ?? '';
+    const initialSignalingServers = rawSignaling === STALE_SIGNALING ? '' : rawSignaling;
+    const initialWebsocketServer = rawWebsocket === STALE_WEBSOCKET ? '' : rawWebsocket;
     const initialAwarenessTimeout =
       (batchedSettings['collab-awareness-timeout'] as number) ?? 30;
     const initialAutoReconnect =
