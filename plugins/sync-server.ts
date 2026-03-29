@@ -149,7 +149,15 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<boolea
 
     if (method === 'PUT') {
       await ensureDir(dirname(abs));
-      await writeFile(abs, await parseBody(req));
+      const body = await parseBody(req);
+      try {
+        await writeFile(abs, body);
+      } catch (err: any) {
+        // FUSE mounts (e.g. Google Drive) often fail on close() even when the
+        // write itself succeeded. EIO on close is safe to ignore.
+        if (!(err.code === 'EIO' && err.syscall === 'close')) throw err;
+        console.warn('[sync-server] EIO on close (FUSE), data likely written:', abs);
+      }
       const s = await stat(abs);
       json(res, 200, { modified: s.mtimeMs });
       return true;

@@ -8,7 +8,6 @@ import { useCallback, useEffect } from 'react';
 import { authService } from '../services/AuthService';
 import { fileStorageService } from '../services/FileStorageService';
 import { serverSyncService } from '../services/ServerSyncService';
-import type { User } from '../types/auth';
 import type { FileNode } from '../types/files';
 
 interface FileStoredDetail { fileId: string; path: string; projectId: string }
@@ -59,11 +58,13 @@ export function useServerSync(isServerMode: boolean) {
       fileStorageService.getAllFiles(false),
     ]);
 
-    const localMap = new Map(localFiles.map((f) => [f.path, f]));
-    const enc = new TextEncoder();
+    // Normalize: server paths have no leading slash, local paths may have one.
+    // Build map keyed by the normalized (no-leading-slash) path so lookups match.
+    const normalize = (p: string) => p.replace(/^\/+/, '');
+    const localMap = new Map(localFiles.map((f) => [normalize(f.path), f]));
 
     for (const sf of serverFiles) {
-      const local = localMap.get(sf.path);
+      const local = localMap.get(normalize(sf.path));
       const serverMs = sf.modified;
 
       if (!local || local.lastModified < serverMs - 1000) {

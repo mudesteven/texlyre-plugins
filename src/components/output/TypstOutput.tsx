@@ -199,7 +199,7 @@ const TypstOutput: React.FC<TypstOutputProps> = ({
         <div className="pdf-viewer">
           {pdfRenderer && useEnhancedRenderer ?
             React.createElement(pdfRenderer.renderOutput, {
-              content: toArrayBuffer(compiledPdf.buffer),
+              content: compiledPdf.buffer.slice(compiledPdf.byteOffset, compiledPdf.byteOffset + compiledPdf.byteLength),
               mimeType: 'application/pdf',
               fileName: 'output.pdf',
               onSave: handleSavePdf
@@ -234,7 +234,7 @@ const TypstOutput: React.FC<TypstOutputProps> = ({
     }
 
     return null;
-  }, [currentView, currentFormat, !!compiledPdf, !!compiledCanvas, useEnhancedRenderer, handleSavePdf]);
+  }, [currentView, currentFormat, compiledPdf, compiledCanvas, useEnhancedRenderer, handleSavePdf]);
 
   const hasAnyOutput = compiledPdf || compiledCanvas;
 

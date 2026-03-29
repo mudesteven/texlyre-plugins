@@ -176,7 +176,7 @@ const LaTeXOutput: React.FC<LaTeXOutputProps> = ({
         <div className="pdf-viewer">
           {pdfRendererPlugin && useEnhancedRenderer ?
             React.createElement(pdfRendererPlugin.renderOutput, {
-              content: toArrayBuffer(compiledPdf.buffer),
+              content: compiledPdf.buffer.slice(compiledPdf.byteOffset, compiledPdf.byteOffset + compiledPdf.byteLength),
               mimeType: 'application/pdf',
               fileName: 'output.pdf',
               onSave: handleSavePdf
@@ -210,7 +210,7 @@ const LaTeXOutput: React.FC<LaTeXOutputProps> = ({
     }
 
     return null;
-  }, [currentView, currentFormat, !!compiledPdf, !!compiledCanvas, pdfRendererPlugin, useEnhancedRenderer, handleSavePdf]);
+  }, [currentView, currentFormat, compiledPdf, compiledCanvas, pdfRendererPlugin, useEnhancedRenderer, handleSavePdf]);
 
   const hasAnyOutput = compiledPdf || compiledCanvas;
 

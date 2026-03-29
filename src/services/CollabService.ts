@@ -68,6 +68,10 @@ class CollabService {
 				if (window.location.protocol === 'https:' && urlObj.protocol === 'ws:') {
 					continue;
 				}
+				// Reject .localhost placeholder URLs — they're never reachable and spam reconnect errors
+				if (urlObj.hostname === 'localhost' || urlObj.hostname.endsWith('.localhost')) {
+					continue;
+				}
 				if (isValidWebSocketUrl(serverUrl)) {
 					validSignalingServers.push(serverUrl);
 				}

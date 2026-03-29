@@ -232,12 +232,23 @@ self.addEventListener('message', async (e: MessageEvent<InboundMessage>) => {
             });
         }
 
-        const transferList: Transferable[] =
-            output instanceof Uint8Array ? [output.buffer as ArrayBuffer] : [];
+        // Copy output out of WASM linear memory before transferring.
+        // Transferring output.buffer directly would detach the WASM module's
+        // memory, making every subsequent compile fail.
+        let safeOutput: Uint8Array | string;
+        let transferList: Transferable[] = [];
+        if (output instanceof Uint8Array) {
+            const copy = new Uint8Array(output.byteLength);
+            copy.set(output);
+            safeOutput = copy;
+            transferList = [copy.buffer as ArrayBuffer];
+        } else {
+            safeOutput = output;
+        }
         const resp: DoneResponse = {
             id,
             type: 'done',
-            result: { format, output, diagnostics },
+            result: { format, output: safeOutput, diagnostics },
         };
         self.postMessage(resp, transferList);
     } catch (err: unknown) {
