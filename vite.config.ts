@@ -21,7 +21,10 @@ try {
   }
 } catch { /* no .env file */ }
 
-const useHttps = process.env.VITE_USE_HTTPS === "true";
+// HTTPS is required for crypto.subtle (Web Crypto API) which is only available
+// in secure contexts. Since server.host=true exposes the dev server on the
+// network, default to HTTPS so accessing via IP still works.
+const useHttps = process.env.VITE_USE_HTTPS !== "false";
 
 const basePath = "/texlyre/";
 
