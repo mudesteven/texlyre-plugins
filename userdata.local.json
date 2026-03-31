@@ -6,7 +6,7 @@
     "collab-auto-reconnect": false,
     "collab-awareness-timeout": 30,
     "collab-provider-type": "webrtc",
-    "collab-signaling-servers": "ws://localhost:4444/",
+    "collab-signaling-servers": "",
     "editor-auto-save-delay": 1000,
     "editor-auto-save-enable": true,
     "editor-font-family": "monospace",

@@ -133,9 +133,23 @@ async function initUserData(): Promise<void> {
 	try {
 		const isMobile = isMobileDevice();
 		const userdataFile = isMobile ? 'userdata.mobile.json' : 'userdata.json';
+		const userdataLocalFile = isMobile ? 'userdata.local.mobile.json' : 'userdata.local.json';
 
 		const response = await fetch(`${BASE_PATH}/${userdataFile}`);
 		const userData = await response.json();
+
+		// In dev mode, merge local overrides (userdata.local.json) on top of defaults.
+		// This lets local dev suppress production-only settings like remote signaling servers.
+		if (import.meta.env.DEV) {
+			try {
+				const localResponse = await fetch(`${BASE_PATH}/${userdataLocalFile}`);
+				if (localResponse.ok) {
+					const localData = await localResponse.json();
+					if (localData.settings) Object.assign(userData.settings, localData.settings);
+					if (localData.properties) Object.assign(userData.properties, localData.properties);
+				}
+			} catch { /* no local override file */ }
+		}
 		const newVersion = userData.version || '1.0.0';
 
 		const existingSettingsParsed = existingSettings ? JSON.parse(existingSettings) : {};

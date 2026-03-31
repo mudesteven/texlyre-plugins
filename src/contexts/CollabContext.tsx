@@ -64,15 +64,18 @@ export const CollabProvider: React.FC<CollabProviderProps> = ({
 
     const initialProviderType =
       (batchedSettings['collab-provider-type'] as CollabProviderType) ?? 'webrtc';
-    // Migrate old localhost defaults — these were placeholder URLs that cause constant reconnect spam.
-    // Persist the clean value so other contexts (FileSyncContext, EditorContext, etc.) also get ''.
-    const STALE_SIGNALING = 'ws://ywebrtc.localhost:8082/';
+    // Migrate stale default URLs that cause constant reconnect spam when unreachable.
+    // In dev mode, also clear the production signaling server since it's not reachable locally.
+    const STALE_SIGNALING_URLS = [
+      'ws://ywebrtc.localhost:8082/',
+      ...(import.meta.env.DEV ? ['wss://ywebrtc.texlyre.org', 'ws://localhost:4444/'] : []),
+    ];
     const STALE_WEBSOCKET = 'ws://yweb.localhost:8082/';
     const rawSignaling = (batchedSettings['collab-signaling-servers'] as string) ?? '';
     const rawWebsocket = (batchedSettings['collab-websocket-server'] as string) ?? '';
-    const initialSignalingServers = rawSignaling === STALE_SIGNALING ? '' : rawSignaling;
+    const initialSignalingServers = STALE_SIGNALING_URLS.includes(rawSignaling) ? '' : rawSignaling;
     const initialWebsocketServer = rawWebsocket === STALE_WEBSOCKET ? '' : rawWebsocket;
-    if (rawSignaling === STALE_SIGNALING) updateSetting('collab-signaling-servers', '');
+    if (STALE_SIGNALING_URLS.includes(rawSignaling)) updateSetting('collab-signaling-servers', '');
     if (rawWebsocket === STALE_WEBSOCKET) updateSetting('collab-websocket-server', '');
     const initialAwarenessTimeout =
       (batchedSettings['collab-awareness-timeout'] as number) ?? 30;
