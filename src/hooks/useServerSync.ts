@@ -42,6 +42,7 @@ export function useServerSync(isServerMode: boolean) {
       if (!projectId || !path) return;
       const file = await fileStorageService.getFile(fileId);
       if (!file || file.type !== 'file' || file.content === undefined) return;
+      if (file.excludeFromSync) return;
       await serverSyncService.putFile(projectId, path, file.content as string | ArrayBuffer);
     };
 

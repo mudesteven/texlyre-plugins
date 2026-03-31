@@ -23,6 +23,7 @@ export interface TypstContextType {
     compiledPdf: Uint8Array | null;
     compiledSvg: string | null;
     compiledCanvas: Uint8Array | null;
+    compilePdfVersion: number;
     compileLog: string;
     currentFormat: TypstOutputFormat;
     setCurrentFormat: (format: TypstOutputFormat) => void;

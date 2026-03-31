@@ -40,6 +40,7 @@ const TypstOutput: React.FC<TypstOutputProps> = ({
     compiledPdf,
     compiledSvg,
     compiledCanvas,
+    compilePdfVersion,
     currentView,
     logIndicator,
     toggleOutputView,
@@ -196,10 +197,10 @@ const TypstOutput: React.FC<TypstOutputProps> = ({
     if (currentFormat === 'pdf' && compiledPdf) {
       const pdfRenderer = pluginRegistry.getRendererForOutput('pdf', 'pdf-renderer');
       return (
-        <div className="pdf-viewer">
+        <div key={compilePdfVersion} className="pdf-viewer">
           {pdfRenderer && useEnhancedRenderer ?
             React.createElement(pdfRenderer.renderOutput, {
-              content: compiledPdf.buffer.slice(compiledPdf.byteOffset, compiledPdf.byteOffset + compiledPdf.byteLength),
+              content: compiledPdf.buffer.slice(compiledPdf.byteOffset, compiledPdf.byteOffset + compiledPdf.byteLength) as ArrayBuffer,
               mimeType: 'application/pdf',
               fileName: 'output.pdf',
               onSave: handleSavePdf
@@ -234,7 +235,7 @@ const TypstOutput: React.FC<TypstOutputProps> = ({
     }
 
     return null;
-  }, [currentView, currentFormat, compiledPdf, compiledCanvas, useEnhancedRenderer, handleSavePdf]);
+  }, [currentView, currentFormat, compiledPdf, compiledCanvas, compilePdfVersion, useEnhancedRenderer, handleSavePdf]);
 
   const hasAnyOutput = compiledPdf || compiledCanvas;
 

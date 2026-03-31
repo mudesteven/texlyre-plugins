@@ -31,6 +31,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
   const [compileError, setCompileError] = useState<string | null>(null);
   const [compiledPdf, setCompiledPdf] = useState<Uint8Array | null>(null);
   const [compiledCanvas, setCompiledCanvas] = useState<Uint8Array | null>(null);
+  const [compilePdfVersion, setCompilePdfVersion] = useState<number>(0);
   const [compileLog, setCompileLog] = useState<string>('');
   const [currentView, setCurrentView] = useState<'log' | 'output'>('log');
   const [currentFormat, setCurrentFormat] = useState<LaTeXOutputFormat>('pdf');
@@ -254,6 +255,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
         switch (format) {
           case 'pdf':
             setCompiledPdf(result.pdf);
+            setCompilePdfVersion(v => v + 1);
             setCurrentView('output');
             setLogIndicator('success');
 
@@ -350,6 +352,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
         switch (format) {
           case 'pdf':
             setCompiledPdf(result.pdf);
+            setCompilePdfVersion(v => v + 1);
             setCurrentView('output');
             setLogIndicator('success');
 
@@ -413,6 +416,7 @@ export const LaTeXProvider: React.FC<LaTeXProviderProps> = ({ children }) => {
         compileError,
         compiledPdf,
         compiledCanvas,
+        compilePdfVersion,
         compileLog,
         compileDocument,
         stopCompilation,

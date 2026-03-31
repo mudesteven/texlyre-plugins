@@ -33,6 +33,7 @@ export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
   const [compiledPdf, setCompiledPdf] = useState<Uint8Array | null>(null);
   const [compiledSvg, setCompiledSvg] = useState<string | null>(null);
   const [compiledCanvas, setCompiledCanvas] = useState<Uint8Array | null>(null);
+  const [compilePdfVersion, setCompilePdfVersion] = useState<number>(0);
   const [compileLog, setCompileLog] = useState<string>('');
   const [currentView, setCurrentView] = useState<'log' | 'output'>('log');
   const [logIndicator, setLogIndicator] = useState<'idle' | 'success' | 'error'>('idle');
@@ -167,6 +168,7 @@ export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
           case 'pdf':
             if (result.pdf) {
               setCompiledPdf(result.pdf);
+              setCompilePdfVersion(v => v + 1);
               setCurrentView('output');
               setLogIndicator('success');
               const fileName = mainFileName.split('/').pop()?.replace(/\.typ$/i, '.pdf') || 'output.pdf';
@@ -280,6 +282,7 @@ export const TypstProvider: React.FC<TypstProviderProps> = ({ children }) => {
         compiledPdf,
         compiledSvg,
         compiledCanvas,
+        compilePdfVersion,
         compileLog,
         currentFormat,
         setCurrentFormat,

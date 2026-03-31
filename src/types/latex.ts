@@ -15,6 +15,7 @@ export interface LaTeXContextType {
 	compileError: string | null;
 	compiledPdf: Uint8Array | null;
 	compiledCanvas: Uint8Array | null;
+	compilePdfVersion: number;
 	clearCache: () => Promise<void>;
 	compileWithClearCache: (mainFileName: string) => Promise<void>;
 	compileLog: string;
