@@ -80,6 +80,15 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
   const activeHoldsRef = useRef<Set<string>>(new Set());
   const processedRequestsRef = useRef<Set<string>>(new Set());
   const syncThrottleRef = useRef<NodeJS.Timeout | null>(null);
+  const isSyncInProgressRef = useRef(false);
+  // Stable refs so Yjs observers don't need to be deps of the connection effect
+  const isFileSyncEnabledRef = useRef(false);
+  const observerCallbacksRef = useRef<{
+    checkAndRequestFiles: () => Promise<void>;
+    handleIncomingSyncRequest: (r: any) => Promise<void>;
+    handleSyncRequestUpdate: (r: any) => Promise<void>;
+    handleVerification: (v: any) => void;
+  }>(null!);
 
   const projectId = docUrl ?
     docUrl.startsWith('yjs:') ?
@@ -596,12 +605,18 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
   const performSync = useCallback(async () => {
     if (!isFileSyncEnabled || !user || !isInitializedRef.current || !docUrl)
       return;
+    if (isSyncInProgressRef.current) return;
 
-    console.log('[FileSyncContext] Performing sync cycle...');
-    cleanupExpiredHolds();
-    cleanupCompletedRequests();
-    await updateLocalFileMap();
-    await checkAndRequestFiles();
+    isSyncInProgressRef.current = true;
+    try {
+      console.log('[FileSyncContext] Performing sync cycle...');
+      cleanupExpiredHolds();
+      cleanupCompletedRequests();
+      await updateLocalFileMap();
+      await checkAndRequestFiles();
+    } finally {
+      isSyncInProgressRef.current = false;
+    }
   }, [
     isFileSyncEnabled,
     user,
@@ -796,6 +811,15 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
     });
   }, [registerSetting, getSetting, enableSync, disableSync]);
 
+  // Update observer refs on every render so closures inside the Yjs effect see fresh values
+  isFileSyncEnabledRef.current = isFileSyncEnabled;
+  observerCallbacksRef.current = {
+    checkAndRequestFiles,
+    handleIncomingSyncRequest,
+    handleSyncRequestUpdate,
+    handleVerification,
+  };
+
   useEffect(() => {
     if (!user || !projectId || isInitializedRef.current) return;
 
@@ -829,33 +853,33 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
         doc.getArray<FileSyncVerification>('verifications');
 
       fileSyncMap.observe(() => {
-        if (isFileSyncEnabled) {
-          setTimeout(checkAndRequestFiles, 1000);
+        if (isFileSyncEnabledRef.current) {
+          setTimeout(() => observerCallbacksRef.current.checkAndRequestFiles(), 1000);
         }
       });
 
       requestsArray.observe(() => {
-        if (isFileSyncEnabled) {
+        if (isFileSyncEnabledRef.current) {
           const requests = requestsArray.toArray();
           requests.forEach((request) => {
             if (
               request.providerId === user.id &&
               request.status === 'pending') {
-              handleIncomingSyncRequest(request);
+              observerCallbacksRef.current.handleIncomingSyncRequest(request);
             } else if (
               request.requesterId === user.id &&
               request.status === 'ready') {
-              handleSyncRequestUpdate(request);
+              observerCallbacksRef.current.handleSyncRequestUpdate(request);
             }
           });
         }
       });
 
       verificationsArray.observe(() => {
-        if (isFileSyncEnabled) {
+        if (isFileSyncEnabledRef.current) {
           const verifications = verificationsArray.toArray();
           verifications.forEach((verification) => {
-            handleVerification(verification);
+            observerCallbacksRef.current.handleVerification(verification);
           });
         }
       });
@@ -875,16 +899,8 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
       }
       isInitializedRef.current = false;
     };
-  }, [
-    user,
-    projectId,
-    isFileSyncEnabled,
-    checkAndRequestFiles,
-    handleIncomingSyncRequest,
-    handleSyncRequestUpdate,
-    handleVerification,
-    getSetting]
-  );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, projectId, getSetting]);
 
   useEffect(() => {
     if (!isFileSyncEnabled || !isInitializedRef.current) {
@@ -960,7 +976,7 @@ export const FileSyncProvider: React.FC<FileSyncProviderProps> = ({
 
   useEffect(() => {
     const unsubscribe = fileStorageEventEmitter.onChange(() => {
-      if (isFileSyncEnabled) {
+      if (isFileSyncEnabled && !isSyncInProgressRef.current) {
         throttledPerformSync();
       }
     });

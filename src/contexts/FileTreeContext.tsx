@@ -127,6 +127,15 @@ export const FileTreeProvider: React.FC<FileTreeProviderProps> = ({
     }
   }, [docUrl]);
 
+  // Re-sync when server mode activates after storage is already initialized.
+  // This handles the race where syncProjectFiles is called during init but
+  // isServerMode is still false (ping hasn't resolved yet).
+  useEffect(() => {
+    if (!storageInitialized.current) return;
+    const projectId = fileStorageService.getCurrentProjectId();
+    if (projectId) syncProjectFiles(projectId).catch(console.warn);
+  }, [syncProjectFiles]);
+
   const refreshFileTree = useCallback(async () => {
     try {
       const tree = await fileStorageService.buildFileTree();

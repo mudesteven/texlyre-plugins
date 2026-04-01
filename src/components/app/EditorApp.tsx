@@ -504,7 +504,7 @@ const EditorAppView: React.FC<EditorAppProps> = ({
   const projectDescription = doc?.projectMetadata?.description || '';
   const projectType = doc?.projectMetadata?.type || 'latex';
 
-  if (!isConnected && !doc) {
+  if (!isConnected || doc === undefined) {
     return (
       <div className="app-container">
         <div className="loading-container">
@@ -594,7 +594,7 @@ const EditorAppView: React.FC<EditorAppProps> = ({
         </div>
       </nav>
 
-      {doc?.documents &&
+      {doc !== undefined &&
         <FileDocumentController
           documents={doc?.documents || []}
           selectedDocId={localDocId}

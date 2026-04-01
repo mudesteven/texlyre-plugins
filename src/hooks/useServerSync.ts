@@ -52,69 +52,145 @@ export function useServerSync(isServerMode: boolean) {
 
   // ── LWW pull for a specific project ───────────────────────────────────
   const syncProjectFiles = useCallback(async (projectId: string) => {
-    if (!isServerMode) return;
+    if (!isServerMode) {
+      console.log('[ServerSync] skipped — not in server mode');
+      return;
+    }
+
+    console.log('[ServerSync] ── starting sync for project:', projectId);
 
     const [serverFiles, localFiles] = await Promise.all([
       serverSyncService.listFiles(projectId),
       fileStorageService.getAllFiles(false),
     ]);
 
-    // Normalize: server paths have no leading slash, local paths may have one.
-    // Build map keyed by the normalized (no-leading-slash) path so lookups match.
+    // Normalize: server paths have no leading slash, local paths always have one.
     const normalize = (p: string) => p.replace(/^\/+/, '');
-    const localMap = new Map(localFiles.map((f) => [normalize(f.path), f]));
+    const toLocalPath = (serverPath: string) => `/${serverPath}`;
 
+    console.log(`[ServerSync] server files (${serverFiles.length}):`);
     for (const sf of serverFiles) {
-      const local = localMap.get(normalize(sf.path));
-      const serverMs = sf.modified;
-
-      if (!local || local.lastModified < serverMs - 1000) {
-        // Server is newer — pull
-        const buf = await serverSyncService.getFile(projectId, sf.path);
-        if (!buf) continue;
-
-        const isBin = isBinaryPath(sf.path);
-        const content: string | ArrayBuffer = isBin ? buf : new TextDecoder().decode(buf);
-
-        if (local) {
-          await fileStorageService.updateFileContent(local.id, content, {
-            showConflictDialog: false,
-            preserveTimestamp: true,
-          });
-        } else {
-          const name = sf.path.split('/').pop() ?? sf.path;
-          await fileStorageService.storeFile(
-            {
-              id: `srv-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-              name,
-              path: sf.path,
-              type: 'file',
-              content,
-              lastModified: serverMs,
-              isBinary: isBin,
-            } as FileNode,
-            { showConflictDialog: false, preserveTimestamp: true },
-          );
-        }
-      } else if (local.lastModified > serverMs + 1000) {
-        // Local is newer — push
-        const content = typeof local.content === 'string'
-          ? local.content
-          : (local.content as ArrayBuffer);
-        await serverSyncService.putFile(projectId, sf.path, content);
+      console.log(`  server: ${sf.path}  (modified ${new Date(sf.modified).toISOString()})`);
+    }
+    console.log(`[ServerSync] local files (${localFiles.length}):`);
+    for (const lf of localFiles) {
+      if (lf.type === 'file' && !lf.isDeleted) {
+        console.log(`  local:  ${lf.path}  (modified ${new Date(lf.lastModified).toISOString()})`);
       }
     }
 
-    // Push any local files the server doesn't have yet
-    const serverPaths = new Set(serverFiles.map((f) => f.path));
+    // Map local files by normalized path (no leading slash) for lookup.
+    const localMap = new Map(localFiles.map((f) => [normalize(f.path), f]));
+
+    // Track IDs deleted during flat-path cleanup so we don't re-push them.
+    const deletedLocalIds = new Set<string>();
+
+    // ── Phase 1: pull from server ──────────────────────────────────────────
+    console.log('[ServerSync] ── phase 1: server → local');
+    for (const sf of serverFiles) {
+      const normalizedSfPath = normalize(sf.path);
+      const local = localMap.get(normalizedSfPath);
+      const serverMs = sf.modified;
+
+      if (local && local.lastModified >= serverMs - 1000) {
+        if (local.lastModified > serverMs + 1000) {
+          // Local is newer — push back (handled in phase 2 via server path check)
+          console.log(`  PUSH-BACK  ${sf.path}  (local newer by ${local.lastModified - serverMs}ms)`);
+        } else {
+          console.log(`  UP-TO-DATE ${sf.path}`);
+        }
+        continue;
+      }
+
+      // Server is newer (or file missing locally) — pull.
+      if (!local) {
+        // If the server file lives in a subdir (e.g. images/foo.png) but local
+        // only has a flat copy (foo.png at root), delete the flat copy first.
+        const sfBasename = sf.path.split('/').pop() ?? sf.path;
+        if (sf.path.includes('/')) {
+          const flatLocal = localMap.get(sfBasename);
+          if (flatLocal) {
+            console.log(`  DEL-FLAT   ${flatLocal.path}  → will be replaced by ${sf.path}`);
+            await fileStorageService.deleteFile(flatLocal.id, {
+              hardDelete: true,
+              showDeleteDialog: false,
+              allowLinkedFileDelete: true,
+            });
+            deletedLocalIds.add(flatLocal.id);
+          }
+        }
+      }
+
+      const buf = await serverSyncService.getFile(projectId, sf.path);
+      if (!buf) {
+        console.log(`  FETCH-FAIL ${sf.path}`);
+        continue;
+      }
+
+      const isBin = isBinaryPath(sf.path);
+      const content: string | ArrayBuffer = isBin ? buf : new TextDecoder().decode(buf);
+
+      if (local) {
+        console.log(`  UPDATE     ${sf.path}  (server newer by ${serverMs - local.lastModified}ms)`);
+        await fileStorageService.updateFileContent(local.id, content, {
+          showConflictDialog: false,
+          preserveTimestamp: true,
+        });
+      } else {
+        const localPath = toLocalPath(sf.path);
+        const name = sf.path.split('/').pop() ?? sf.path;
+        console.log(`  PULL-NEW   ${sf.path}  → stored at ${localPath}`);
+        // Ensure parent directory entries exist in IDB so buildFileTree nests correctly.
+        await fileStorageService.createDirectoryPath(localPath);
+        await fileStorageService.storeFile(
+          {
+            id: `srv-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            name,
+            path: localPath,
+            type: 'file',
+            content,
+            lastModified: serverMs,
+            isBinary: isBin,
+          } as FileNode,
+          { showConflictDialog: false, preserveTimestamp: true },
+        );
+      }
+    }
+
+    // ── Phase 2: push local-only files to server ───────────────────────────
+    console.log('[ServerSync] ── phase 2: local → server');
+    const serverNormalizedPaths = new Set(serverFiles.map((f) => normalize(f.path)));
+    const serverBasenamesInSubdirs = new Set(
+      serverFiles
+        .filter((f) => f.path.includes('/'))
+        .map((f) => f.path.split('/').pop() ?? f.path),
+    );
     for (const local of localFiles) {
-      if (local.type !== 'file' || local.isDeleted || serverPaths.has(local.path)) continue;
+      if (local.type !== 'file' || local.isDeleted) continue;
+      if (deletedLocalIds.has(local.id)) continue;
       if (local.content === undefined) continue;
-      const content = typeof local.content === 'string'
-        ? local.content
-        : (local.content as ArrayBuffer);
+      const localNorm = normalize(local.path);
+      if (serverNormalizedPaths.has(localNorm)) {
+        // Already handled: push-back case from phase 1
+        if (local.lastModified > (serverFiles.find(f => normalize(f.path) === localNorm)?.modified ?? 0) + 1000) {
+          console.log(`  PUSH       ${local.path}  (local newer)`);
+          const content = typeof local.content === 'string' ? local.content : (local.content as ArrayBuffer);
+          await serverSyncService.putFile(projectId, localNorm, content);
+        }
+        continue;
+      }
+      // Don't push a flat-root file if the server already has it under a subdir.
+      const localBasename = localNorm.split('/').pop() ?? localNorm;
+      if (!localNorm.includes('/') && serverBasenamesInSubdirs.has(localBasename)) {
+        console.log(`  SKIP-FLAT  ${local.path}  (server has it at a subdir path)`);
+        continue;
+      }
+      console.log(`  PUSH-NEW   ${local.path}  (not on server)`);
+      const content = typeof local.content === 'string' ? local.content : (local.content as ArrayBuffer);
       await serverSyncService.putFile(projectId, local.path, content);
     }
+
+    console.log('[ServerSync] ── sync complete');
   }, [isServerMode]);
 
   return { syncProjectFiles, pushAccount };
